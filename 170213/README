@@ -1,0 +1,10 @@
+-------------create patch file------------------
+diff -Nuar [old file] [new file] > file.patch
+
+-------------patch updates--------------------------
+patch -p0 < file.patch 
+
+-------------patch recover--------------------------
+patch -R -p0 < file.patch 
+
+
