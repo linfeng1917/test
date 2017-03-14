@@ -1,0 +1,3667 @@
+diff --git a/170221/cat/animal-base.o b/170221/cat/animal-base.o
+new file mode 100644
+index 0000000..1d9eb3e
+Binary files /dev/null and b/170221/cat/animal-base.o differ
+diff --git a/170221/cat/cat.o b/170221/cat/cat.o
+new file mode 100644
+index 0000000..a9b038e
+Binary files /dev/null and b/170221/cat/cat.o differ
+diff --git a/170221/cat/dog.o b/170221/cat/dog.o
+new file mode 100644
+index 0000000..75975a5
+Binary files /dev/null and b/170221/cat/dog.o differ
+diff --git a/170221/cat/main b/170221/cat/main
+new file mode 100755
+index 0000000..9abe86a
+Binary files /dev/null and b/170221/cat/main differ
+diff --git a/170221/cat/main.c b/170221/cat/main.c
+index 5326201..4d9707b 100644
+--- a/170221/cat/main.c
++++ b/170221/cat/main.c
+@@ -24,13 +24,13 @@ int main(int argc, const char *argv[])
+     dog_t *dog = dog_init();
+ 
+     /* dog 类测试 */
+-/*    animal_eat(&dog->base, "bones");
+-    animal_walk(&dog->base, 5);
++   animal_eat(&dog->base, "bones");
++/*    animal_walk(&dog->base, 5);
+     animal_talk(&dog->base, "wuang wuang wuang..."); */
+ 
+     /* cat 类测试 */
+-    animal_eat(&cat->base, "fish");
++  //  animal_eat(&cat->base, "fish");
+     animal_walk(&cat->base, 3);
+-    animal_talk(&cat->base, "miao miao miao...");
++ //   animal_talk(&cat->base, "miao miao miao...");
+ 
+ }
+diff --git a/170221/cat/main.o b/170221/cat/main.o
+new file mode 100644
+index 0000000..22170ed
+Binary files /dev/null and b/170221/cat/main.o differ
+diff --git a/170222/a.out b/170222/a.out
+new file mode 100755
+index 0000000..1ef3dfc
+Binary files /dev/null and b/170222/a.out differ
+diff --git a/170222/test.c b/170222/test.c
+new file mode 100644
+index 0000000..cbd43b9
+--- /dev/null
++++ b/170222/test.c
+@@ -0,0 +1,8 @@
++#include<iostream>
++using namespace std;
++
++int main()
++{
++	cout<< "hi\n";
++	return 0; 
++}
+diff --git a/170223/a b/170223/a
+new file mode 100644
+index 0000000..63bab6f
+--- /dev/null
++++ b/170223/a
+@@ -0,0 +1 @@
++fixls!
+diff --git a/170223/fork b/170223/fork
+new file mode 100755
+index 0000000..d361f01
+Binary files /dev/null and b/170223/fork differ
+diff --git a/170223/fork.c b/170223/fork.c
+new file mode 100644
+index 0000000..528d89d
+--- /dev/null
++++ b/170223/fork.c
+@@ -0,0 +1,28 @@
++#include <unistd.h>  
++#include <stdio.h>  
++int main ()   
++{   
++    pid_t fpid; //fpid表示fork函数返回的值  
++    int count=0;  
++    fpid=fork();   
++    if (fpid < 0)   
++        printf("error in fork!");   
++    else if (fpid == 0) {  
++        while(1)
++		{
++			printf("i am the child process, my process id is %d\n",getpid());   
++        	count++; 
++			sleep(1);
++		}
++    }  
++    else {  
++		while(1)
++		{
++        	printf("i am the parent process, my process id is %d\n",getpid());   
++        	count++;
++			sleep(1);
++		}
++    }  
++    printf("统计结果是: %d/n",count);  
++    return 0;  
++}  
+diff --git a/170223/patch b/170223/patch
+new file mode 100644
+index 0000000..a7df989
+--- /dev/null
++++ b/170223/patch
+@@ -0,0 +1,416 @@
++diff --git a/170221/c-recipes b/170221/c-recipes
++deleted file mode 160000
++index 656b126..0000000
++--- a/170221/c-recipes
+++++ /dev/null
++@@ -1 +0,0 @@
++-Subproject commit 656b12603e7a444cbecf2ae482662c0980204986
++diff --git a/170221/cat/Makefile b/170221/cat/Makefile
++new file mode 100644
++index 0000000..32e30f2
++--- /dev/null
+++++ b/170221/cat/Makefile
++@@ -0,0 +1,21 @@
+++all:main
+++
+++main:main.o dog.o cat.o animal-base.o
+++	gcc -g -O0 -o $@ $^
+++
+++main.o:main.c
+++	gcc -g -O0 -o $@ -c $^
+++
+++cat.o:cat.c
+++	gcc -g -O0 -o $@ -c $^
+++
+++dog.o:dog.c
+++	gcc -g -O0 -o $@ -c $^
+++
+++animal-base.o:animal-base.c
+++	gcc -g -O0 -o $@ -c $^
+++
+++.PHONY:clean
+++
+++clean:
+++	rm main main.o dog.o cat.o animal-base.o
++diff --git a/170221/cat/animal-base.c b/170221/cat/animal-base.c
++new file mode 100644
++index 0000000..66d02e5
++--- /dev/null
+++++ b/170221/cat/animal-base.c
++@@ -0,0 +1,66 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  animal-base.c
+++ *
+++ *    Description:  animal base class.
+++ *
+++ *        Created:  12/31/2012 12:27:27 PM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#include <assert.h>
+++#include <stdlib.h>
+++#include <string.h>
+++
+++#include "animal-base.h"
+++
+++/* 基类的构造函数，需要显示调用 */
+++animal_t * animal_init(char *name)
+++{
+++    assert(name != NULL);
+++    size_t name_len = strlen(name);
+++
+++    animal_t *animal = (animal_t *)malloc(sizeof(animal_t)
+++            + sizeof(animal_ops_t) + name_len + 1);
+++    memset(animal, 0, (sizeof(animal_t) + sizeof(animal_ops_t)
+++                + name_len + 1));
+++    animal->name = (char *)animal + sizeof(animal_t);
+++    memcpy(animal->name, name, name_len);
+++    animal->animal_ops = (animal_ops_t *)((char *)animal
+++            + sizeof(animal_t) + name_len + 1);
+++
+++    return animal;
+++}
+++
+++/* 基类的有关操作，如吃，走，说等等 */
+++void animal_eat(animal_t *animal, char *food)
+++{
+++    animal->animal_ops->eat(food);
+++    return;
+++}
+++
+++void animal_walk(animal_t *animal, int steps)
+++{
+++    animal->animal_ops->walk(steps);
+++    return;
+++}
+++
+++void animal_talk(animal_t *animal, char *msg)
+++{
+++    animal->animal_ops->talk(msg);
+++    return;
+++}
+++
+++/* 基类的析构函数，需要显示调用 */
+++void animal_die(animal_t *animal)
+++{
+++    assert(animal != NULL);
+++
+++    free(animal);
+++    return;
+++}
+++
++diff --git a/170221/cat/animal-base.h b/170221/cat/animal-base.h
++new file mode 100644
++index 0000000..4281c46
++--- /dev/null
+++++ b/170221/cat/animal-base.h
++@@ -0,0 +1,49 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  animal-base.h
+++ *
+++ *    Description:  animal base class.
+++ *
+++ *        Created:  12/31/2012 11:36:43 AM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#ifndef _ANIMAL_H_
+++#define _ANIMAL_H_
+++
+++typedef struct animal_s_ animal_t;
+++typedef struct animal_ops_s_ animal_ops_t;
+++
+++
+++/* 动物类，是所有动物类的基类,也是抽象类 */
+++struct animal_s_ {
+++    char *name; /*< 动物的名称 */
+++    animal_ops_t *animal_ops; /* 动物的基本行为 */
+++};
+++
+++/* 动物的基本行为 */
+++struct animal_ops_s_ {
+++    /* 动物吃了什么食物 */
+++    void (*eat)(char *food);
+++    /* 动物走了多少步 */
+++    void (*walk)(int steps);
+++    /* 动物在说什么 */
+++    void (*talk)(char *msg);
+++};
+++
+++/* 基类的构造函数，需要显示调用 */
+++extern animal_t * animal_init(char *name);
+++
+++/* 基类的有关操作，如吃，走，说等等 */
+++extern void animal_eat(animal_t *animal, char *food);
+++extern void animal_walk(animal_t *animal, int steps);
+++extern void animal_talk(animal_t *animal, char *msg);
+++
+++/* 基类的析构函数，需要显示调用 */
+++extern void animal_die(animal_t *animal);
+++
+++#endif  /* _ANIMAL_H_ */
++diff --git a/170221/cat/cat.c b/170221/cat/cat.c
++new file mode 100644
++index 0000000..258e3b9
++--- /dev/null
+++++ b/170221/cat/cat.c
++@@ -0,0 +1,60 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  cat.c
+++ *
+++ *    Description:  cat class derived from animal base class.
+++ *
+++ *        Created:  12/31/2012 12:52:26 PM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#include <assert.h>
+++#include <stdio.h>
+++#include <stdlib.h>
+++#include <string.h>
+++
+++#include "cat.h"
+++
+++static void eat(char *food);
+++
+++static void walk(int steps);
+++
+++static void talk(char *msg);
+++
+++cat_t * cat_init()
+++{
+++    cat_t *cat = (cat_t *)malloc(sizeof(cat_t));
+++    animal_t *animal = (animal_t *)animal_init("cat");
+++    memcpy(&(cat->base), animal, sizeof(animal_t));
+++
+++    cat->base.animal_ops->eat = eat;
+++    cat->base.animal_ops->walk = walk;
+++    cat->base.animal_ops->talk = talk;
+++
+++    animal_die(animal);
+++    return cat;
+++}
+++
+++void cat_die(cat_t *cat)
+++{
+++    /* nothing to do here. */
+++}
+++
+++static void eat(char *food)
+++{
+++    printf("I'm a cat, I eat %s\n", food);
+++}
+++
+++static void walk(int steps)
+++{
+++    printf("I'm a cat, I can jump %d steps one time\n", steps);
+++}
+++
+++static void talk(char *msg)
+++{
+++    printf("I'm a cat, I talk my language %s\n", msg);
+++}
++diff --git a/170221/cat/cat.h b/170221/cat/cat.h
++new file mode 100644
++index 0000000..d730b86
++--- /dev/null
+++++ b/170221/cat/cat.h
++@@ -0,0 +1,29 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  cat.h
+++ *
+++ *    Description:  cat class derived from animal base class.
+++ *
+++ *        Created:  12/31/2012 12:44:05 PM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#include "animal-base.h"
+++
+++typedef struct cat_s_ cat_t;
+++
+++struct cat_s_ {
+++    animal_t base; /* 继承自 animal 基类 */
+++
+++    /* 以下还可以添加与 cat 相关的属性和方法(函数指针), 如: */
+++    /* char *owner; // cat 的主人 */
+++    /* void (*hunt)(const char *mouse); // 捕老鼠 */
+++};
+++
+++extern cat_t * cat_init();
+++extern void cat_die(cat_t * cat);
+++
++diff --git a/170221/cat/core b/170221/cat/core
++new file mode 100644
++index 0000000..0270bee
++Binary files /dev/null and b/170221/cat/core differ
++diff --git a/170221/cat/dog.c b/170221/cat/dog.c
++new file mode 100644
++index 0000000..6d2fe17
++--- /dev/null
+++++ b/170221/cat/dog.c
++@@ -0,0 +1,60 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  dog.c
+++ *
+++ *    Description:  dog class derived from animal base class.
+++ *
+++ *        Created:  12/31/2012 12:52:26 PM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#include <assert.h>
+++#include <stdio.h>
+++#include <stdlib.h>
+++#include <string.h>
+++
+++#include "dog.h"
+++
+++static void eat(char *food);
+++
+++static void walk(int steps);
+++
+++static void talk(char *msg);
+++
+++dog_t * dog_init()
+++{
+++    dog_t *dog = (dog_t *)malloc(sizeof(dog_t));
+++    animal_t *animal = (animal_t *)animal_init("hello-dog");
+++    memcpy(&(dog->base), animal, sizeof(animal_t));
+++
+++    dog->base.animal_ops->eat = eat;
+++    dog->base.animal_ops->walk = walk;
+++    dog->base.animal_ops->talk = talk;
+++
+++    animal_die(animal);
+++    return dog;
+++}
+++
+++void dog_die(dog_t *dog)
+++{
+++    /* nothing to do here. */
+++}
+++
+++static void eat(char *food)
+++{
+++    printf("I'm a dog, I eat %s\n", food);
+++}
+++
+++static void walk(int steps)
+++{
+++    printf("I'm a dog, I can jump %d steps one time\n", steps);
+++}
+++
+++static void talk(char *msg)
+++{
+++    printf("I'm a dog, I talk my language %s\n", msg);
+++}
++diff --git a/170221/cat/dog.h b/170221/cat/dog.h
++new file mode 100644
++index 0000000..e310b5d
++--- /dev/null
+++++ b/170221/cat/dog.h
++@@ -0,0 +1,29 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  dog.h
+++ *
+++ *    Description:  dog class derived from animal base class.
+++ *
+++ *        Created:  12/31/2012 12:44:05 PM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#include "animal-base.h"
+++
+++typedef struct dog_s_ dog_t;
+++
+++struct dog_s_ {
+++    animal_t base; /* 继承自 animal 基类 */
+++
+++    /* 以下还可以添加与 dog 相关的属性和方法(函数指针), 如: */
+++    /* char *owner; // dog 的主人 */
+++    /* void (*hunt)(const char *rabbit); // 猎兔犬 */
+++};
+++
+++extern dog_t * dog_init();
+++extern void dog_die(dog_t * dog);
+++
++diff --git a/170221/cat/main.c b/170221/cat/main.c
++new file mode 100644
++index 0000000..4d9707b
++--- /dev/null
+++++ b/170221/cat/main.c
++@@ -0,0 +1,36 @@
+++/*
+++ * =============================================================================
+++ *
+++ *       Filename:  main.c
+++ *
+++ *    Description:  main test.
+++ *
+++ *        Created:  12/31/2012 01:00:43 PM
+++ *
+++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
+++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
+++ *
+++ * =============================================================================
+++ */
+++#include <stdio.h>
+++
+++#include "animal-base.h"
+++#include "dog.h"
+++#include "cat.h"
+++
+++int main(int argc, const char *argv[])
+++{
+++    cat_t *cat = cat_init();
+++    dog_t *dog = dog_init();
+++
+++    /* dog 类测试 */
+++   animal_eat(&dog->base, "bones");
+++/*    animal_walk(&dog->base, 5);
+++    animal_talk(&dog->base, "wuang wuang wuang..."); */
+++
+++    /* cat 类测试 */
+++  //  animal_eat(&cat->base, "fish");
+++    animal_walk(&cat->base, 3);
+++ //   animal_talk(&cat->base, "miao miao miao...");
+++
+++}
++diff --git a/sensor/sensor.c b/sensor/sensor.c
++deleted file mode 100644
++index 5bbb3c4..0000000
++--- a/sensor/sensor.c
+++++ /dev/null
++@@ -1 +0,0 @@
++-this is to test sensor  
+diff --git a/170224/message.db b/170224/message.db
+new file mode 100644
+index 0000000..1a282e5
+Binary files /dev/null and b/170224/message.db differ
+diff --git a/170224/recursion b/170224/recursion
+new file mode 100755
+index 0000000..bbf721e
+Binary files /dev/null and b/170224/recursion differ
+diff --git a/170224/recursion.c b/170224/recursion.c
+new file mode 100644
+index 0000000..c994245
+--- /dev/null
++++ b/170224/recursion.c
+@@ -0,0 +1,16 @@
++#include<stdio.h>
++
++int GetAge(int num)
++{
++	if(num == 1)
++		return 10;
++	return GetAge(num-1)+2;
++}
++
++int main(int argc, const char *argv[])
++{
++	int age;
++	scanf("%d",&age);
++	printf("the age is %d\n",GetAge(age));
++	return 0;
++}
+diff --git a/170224/sort.c b/170224/sort.c
+new file mode 100644
+index 0000000..26a6d41
+--- /dev/null
++++ b/170224/sort.c
+@@ -0,0 +1,21 @@
++#include<stdio.h>
++
++void exchange(int a[], int i, int j)
++{
++	int temp = a[i];
++	a[i] = a[j];
++	a[j] = temp;
++}
++
++int main()
++{
++	int a[] = {6, 5, 3, 1, 8, 7, 2, 4};
++	int n = sizeof(a)/sizeof(int);
++	for(int j=0; j<n-1; j++)
++		for(int i=0; i<n-1-j; i++)
++		{
++			if(a[i]>a[i+1])
++				exchange(a,i,i+1);
++		}
++	return 0;
++}
+diff --git a/170227/conversion.c b/170227/conversion.c
+new file mode 100644
+index 0000000..1dad858
+--- /dev/null
++++ b/170227/conversion.c
+@@ -0,0 +1,19 @@
++#include<stdio.h>
++#include<string.h>
++#include<stdlib.h>
++
++conversion(int array[],int n)
++{
++	int i,j=0,temp;
++	for(i=0; i<n; i++)
++	{
++		if(array[i]<0)
++		{
++			temp = array[i];
++			array[i]=array[j];
++			array[j]=temp;
++			j++; 
++		}
++
++	}
++}
+diff --git a/170227/malloc b/170227/malloc
+new file mode 100755
+index 0000000..dbc7c15
+Binary files /dev/null and b/170227/malloc differ
+diff --git a/170227/malloc.c b/170227/malloc.c
+new file mode 100644
+index 0000000..7faa8fc
+--- /dev/null
++++ b/170227/malloc.c
+@@ -0,0 +1,29 @@
++#include<stdio.h>
++#include<string.h>
++#include<stdlib.h>
++
++#define MEMSEZE 1024*1024
++/*void test2()
++{
++	int count=0;
++	void *p=NULL;
++	while(1)
++	{
++		P = (void*)malloc(MEMSEZE);
++		if(!p) break;
++		memset(p,1,MEMSEZE);
++		printf("current allocation %d\n",++count);
++	}
++}*/
++int main(int argc, const char *argv[])
++{
++	int count=0;
++	void *p=NULL;
++	while(1)
++	{
++		p = (void*)malloc(MEMSEZE);
++		if(!p) break;
++		printf("current allocation %d\n",++count);
++	}
++	return 0;
++}
+diff --git a/170228/DList.c b/170228/DList.c
+new file mode 100644
+index 0000000..0cada0c
+--- /dev/null
++++ b/170228/DList.c
+@@ -0,0 +1,200 @@
++#include"DList.h"
++#include<malloc.h>
++#include<stdlib.h>
++
++Position MakeNode(Item i)
++{
++	PNode p =NULL;
++	p = (PNode)malloc(sizeof(Node));
++	if(p!=NULL)
++	{
++		p->data = i;
++		p->previous = NULL;
++		p->next = NULL;
++	}
++	return p;
++}
++
++void FreeNode(PNode p)
++{
++	free(p);
++}
++
++DList *InitList()
++{
++	DList *plist = (DList*)malloc(sizeof(DList));
++	PNode head = MakeNode(0);
++	if(plist != NULL)
++	{
++		if(head != NULL)
++		{
++			plist->head = head;
++			plist->tail = head;
++			plist->size = 0;
++		}
++		else
++			return NULL;
++	}
++	return plist;
++}
++
++void DestoryList(DList *plist)
++{
++	ClearList(plist);
++	free(GetHead(plist);
++	free(plist);
++}
++
++int IsEmpty(DList *plist)
++{
++	if(GetSize(plist) == 0 && GetTail(plist) == GetHead(plist))
++		return 1;
++	else
++		return 0;
++}
++
++void ClearList(DList *plist)
++{
++	PNode temp,p;
++	p = GetTail(plist);
++	while(!IsEmpty(plist))
++	{
++		temp = GetPrevious(p);
++		FreeNode(p);
++		p = temp;
++		plist->tail = temp;
++		plist->size--;
++	}
++}
++
++Position GetHead(DList *plist)
++{
++	return plist->head;
++}
++
++Position GetTail(DList *plist)
++{
++	return plist->tail;
++}
++
++int GetSize(DList *plist)
++{
++	return plist->size;
++}
++
++Position GetNext(Position p)
++{
++	return p->next;
++}
++
++Position GetPrevious(Position p)
++{
++	return p->previous;
++}
++
++PNode InsFirst(DList *plist, PNode pnode)
++{
++	Position head = GetHead(plist);
++	if(IsEmpty(plist))
++		plist->tail = pnode;
++	plist->size++;
++
++	pnode->next = head->next;
++	pnode->previous = head;
++
++	if(head->next!=NULL)
++		head->next->previous = pnode;
++	head-next = pnode;
++
++	return pnode;
++}
++
++PNode DelFirst(DList *plist)
++{
++	Position head = GetHead(plist);
++	Position p = head->next;
++	if(p!=NULL)
++	{
++		if(p==GetTail(plist))
++			plist->tail = p->previous;
++		head->next = p->next;
++		head->next->previous = head;
++		plist->size--;
++	}
++	return p;
++}
++
++Item GetItem(Position p)
++{
++	return p->data;
++}
++
++void SetItem(Position p, Item i)
++{
++	p->data = i;
++}
++
++PNode Remove(Dlist *plist)
++{
++	Position p = NULL;
++	if(IsEmpty(plist))
++		return NULL;
++	else
++	{
++		p = GetTail(plist);
++		p->previous->next = p->next;
++		plist->tail = p->previous;
++		plist->size--;
++		return p;
++	}
++}
++
++PNode InsBefore(DList *plist, Position p, PNode s)
++{
++	s->previous = p->previous;
++	s->next = p;
++	p->previous->next = s;
++	p->previous = s;
++	plist->size++;
++	return s;
++}
++
++PNode InsAfter(DList *plist, Position p, PNode s)
++{
++	s->next = p->next;
++	s->previous = p;
++	if(p->next != NULL)
++		p->next-previous = s;
++	p-next = s;
++
++	if(p = GetTail(plist))
++		plist->tail = s;
++	plist->size++;
++	return s;
++}
++
++PNode LocatePos(Dlist *plist, int i)
++{
++	int cnt = 0;
++	Position p = GetHead(plist);
++	if(i>GetSize(plist) || i<1)
++		return NULL;
++	while(++cnt<=i)
++		p = p->next;
++	return p;
++}
++
++void ListTraverse(DList *plist, void(*visit)())
++{
++	Position p = GetHead(plist);
++	if(IsEmpty(plist))
++		exit(0);
++	else
++	{
++		while(p->next != NULL)
++		{
++			p = p->next;
++			visit(p->data);
++		}
++	}
++} 
+diff --git a/170228/Dlist.h b/170228/Dlist.h
+new file mode 100644
+index 0000000..ac51909
+--- /dev/null
++++ b/170228/Dlist.h
+@@ -0,0 +1,56 @@
++#ifndef _DLIST_H_
++#define _DLIST_H_
++
++typedef int Item;
++typedef struct Node * PNode;
++typedef PNode Position;
++
++typedef struct Node
++{
++	Item data;
++	PNode previous;
++	PNode next;
++}Node;
++
++typedef struct
++{
++	PNode head;
++	PNode tail;
++	int size;
++}DList;
++
++Position MakeNode(Item i);
++
++void FreeNode(PNode p);
++
++DList *InitList();
++
++void DestroyList(DList *plist);
++
++void ClearList(DList *plist);
++
++Position GetHead(DList *plist);
++
++Position GetTail(DList *plist);
++
++int GetSize(DList *plist);
++
++Position GetNext(Position p);
++
++Position GetPrevious(Position p);
++
++PNode InsFirst(DList *plist, PNode pnode);
++
++PNode DelFirst(DList *plist);
++
++Item GetItem(Position p);
++
++void SetItem(Position p,Item i);
++
++PNode Remove(DList *plist);
++
++PNode InsBefore(DList *plist, Position p, PNode s);
++
++PNode LocatePos(DList *plist, int i);
++
++void ListTraverse(DList *plist, void (*visit)());
+diff --git a/170301/.tmp_versions/ycbus.mod b/170301/.tmp_versions/ycbus.mod
+new file mode 100644
+index 0000000..12dcd35
+--- /dev/null
++++ b/170301/.tmp_versions/ycbus.mod
+@@ -0,0 +1,2 @@
++/home/public/workspace/github/test/170301/ycbus.ko
++/home/public/workspace/github/test/170301/ycbus.o
+diff --git a/170301/.ycbus.ko.cmd b/170301/.ycbus.ko.cmd
+new file mode 100644
+index 0000000..62ba6ed
+--- /dev/null
++++ b/170301/.ycbus.ko.cmd
+@@ -0,0 +1 @@
++cmd_/home/public/workspace/github/test/170301/ycbus.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/public/workspace/github/test/170301/ycbus.ko /home/public/workspace/github/test/170301/ycbus.o /home/public/workspace/github/test/170301/ycbus.mod.o
+diff --git a/170301/.ycbus.mod.o.cmd b/170301/.ycbus.mod.o.cmd
+new file mode 100644
+index 0000000..08f93df
+--- /dev/null
++++ b/170301/.ycbus.mod.o.cmd
+@@ -0,0 +1,600 @@
++cmd_/home/public/workspace/github/test/170301/ycbus.mod.o := gcc -Wp,-MD,/home/public/workspace/github/test/170301/.ycbus.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I./arch/x86/include -Iarch/x86/include/generated/uapi -Iarch/x86/include/generated  -Iinclude -I./arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I./include/uapi -Iinclude/generated/uapi -include ./include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -fno-delete-null-pointer-checks -Wno-maybe-uninitialized -O2 --param=allow-store-data-races=0 -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ycbus.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(ycbus)" -DMODULE  -c -o /home/public/workspace/github/test/170301/ycbus.mod.o /home/public/workspace/github/test/170301/ycbus.mod.c
++
++source_/home/public/workspace/github/test/170301/ycbus.mod.o := /home/public/workspace/github/test/170301/ycbus.mod.c
++
++deps_/home/public/workspace/github/test/170301/ycbus.mod.o := \
++    $(wildcard include/config/module/unload.h) \
++  include/linux/module.h \
++    $(wildcard include/config/modules.h) \
++    $(wildcard include/config/sysfs.h) \
++    $(wildcard include/config/unused/symbols.h) \
++    $(wildcard include/config/module/sig.h) \
++    $(wildcard include/config/modules/tree/lookup.h) \
++    $(wildcard include/config/generic/bug.h) \
++    $(wildcard include/config/kallsyms.h) \
++    $(wildcard include/config/smp.h) \
++    $(wildcard include/config/tracepoints.h) \
++    $(wildcard include/config/tracing.h) \
++    $(wildcard include/config/event/tracing.h) \
++    $(wildcard include/config/ftrace/mcount/record.h) \
++    $(wildcard include/config/livepatch.h) \
++    $(wildcard include/config/constructors.h) \
++    $(wildcard include/config/debug/set/module/ronx.h) \
++  include/linux/list.h \
++    $(wildcard include/config/debug/list.h) \
++  include/linux/types.h \
++    $(wildcard include/config/have/uid16.h) \
++    $(wildcard include/config/uid16.h) \
++    $(wildcard include/config/lbdaf.h) \
++    $(wildcard include/config/arch/dma/addr/t/64bit.h) \
++    $(wildcard include/config/phys/addr/t/64bit.h) \
++    $(wildcard include/config/64bit.h) \
++  include/uapi/linux/types.h \
++  arch/x86/include/uapi/asm/types.h \
++  include/uapi/asm-generic/types.h \
++  include/asm-generic/int-ll64.h \
++  include/uapi/asm-generic/int-ll64.h \
++  arch/x86/include/uapi/asm/bitsperlong.h \
++  include/asm-generic/bitsperlong.h \
++  include/uapi/asm-generic/bitsperlong.h \
++  include/uapi/linux/posix_types.h \
++  include/linux/stddef.h \
++  include/uapi/linux/stddef.h \
++  include/linux/compiler.h \
++    $(wildcard include/config/sparse/rcu/pointer.h) \
++    $(wildcard include/config/trace/branch/profiling.h) \
++    $(wildcard include/config/profile/all/branches.h) \
++    $(wildcard include/config/kasan.h) \
++    $(wildcard include/config/enable/must/check.h) \
++    $(wildcard include/config/enable/warn/deprecated.h) \
++    $(wildcard include/config/kprobes.h) \
++  include/linux/compiler-gcc.h \
++    $(wildcard include/config/arch/supports/optimized/inlining.h) \
++    $(wildcard include/config/optimize/inlining.h) \
++    $(wildcard include/config/gcov/kernel.h) \
++    $(wildcard include/config/arch/use/builtin/bswap.h) \
++  arch/x86/include/asm/posix_types.h \
++    $(wildcard include/config/x86/32.h) \
++  arch/x86/include/uapi/asm/posix_types_64.h \
++  include/uapi/asm-generic/posix_types.h \
++  include/linux/poison.h \
++    $(wildcard include/config/illegal/pointer/value.h) \
++  include/uapi/linux/const.h \
++  include/linux/kernel.h \
++    $(wildcard include/config/preempt/voluntary.h) \
++    $(wildcard include/config/debug/atomic/sleep.h) \
++    $(wildcard include/config/mmu.h) \
++    $(wildcard include/config/prove/locking.h) \
++    $(wildcard include/config/panic/timeout.h) \
++  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
++  include/linux/linkage.h \
++  include/linux/stringify.h \
++  include/linux/export.h \
++    $(wildcard include/config/have/underscore/symbol/prefix.h) \
++    $(wildcard include/config/modversions.h) \
++  arch/x86/include/asm/linkage.h \
++    $(wildcard include/config/x86/64.h) \
++    $(wildcard include/config/x86/alignment/16.h) \
++  include/linux/bitops.h \
++  arch/x86/include/asm/bitops.h \
++    $(wildcard include/config/x86/cmov.h) \
++  arch/x86/include/asm/alternative.h \
++    $(wildcard include/config/paravirt.h) \
++  arch/x86/include/asm/asm.h \
++  arch/x86/include/asm/ptrace.h \
++    $(wildcard include/config/x86/debugctlmsr.h) \
++  arch/x86/include/asm/segment.h \
++    $(wildcard include/config/cc/stackprotector.h) \
++    $(wildcard include/config/x86/32/lazy/gs.h) \
++  arch/x86/include/asm/cache.h \
++    $(wildcard include/config/x86/l1/cache/shift.h) \
++    $(wildcard include/config/x86/internode/cache/shift.h) \
++    $(wildcard include/config/x86/vsmp.h) \
++  arch/x86/include/asm/page_types.h \
++    $(wildcard include/config/physical/start.h) \
++    $(wildcard include/config/physical/align.h) \
++  arch/x86/include/asm/page_64_types.h \
++    $(wildcard include/config/randomize/base.h) \
++    $(wildcard include/config/randomize/base/max/offset.h) \
++  arch/x86/include/uapi/asm/ptrace.h \
++  arch/x86/include/uapi/asm/ptrace-abi.h \
++  arch/x86/include/asm/processor-flags.h \
++    $(wildcard include/config/vm86.h) \
++  arch/x86/include/uapi/asm/processor-flags.h \
++  arch/x86/include/asm/paravirt_types.h \
++    $(wildcard include/config/x86/local/apic.h) \
++    $(wildcard include/config/pgtable/levels.h) \
++    $(wildcard include/config/x86/pae.h) \
++    $(wildcard include/config/queued/spinlocks.h) \
++    $(wildcard include/config/paravirt/debug.h) \
++  arch/x86/include/asm/desc_defs.h \
++  arch/x86/include/asm/kmap_types.h \
++    $(wildcard include/config/debug/highmem.h) \
++  include/asm-generic/kmap_types.h \
++  arch/x86/include/asm/pgtable_types.h \
++    $(wildcard include/config/kmemcheck.h) \
++    $(wildcard include/config/mem/soft/dirty.h) \
++    $(wildcard include/config/proc/fs.h) \
++  arch/x86/include/asm/pgtable_64_types.h \
++  arch/x86/include/asm/sparsemem.h \
++    $(wildcard include/config/sparsemem.h) \
++  arch/x86/include/asm/spinlock_types.h \
++    $(wildcard include/config/paravirt/spinlocks.h) \
++    $(wildcard include/config/nr/cpus.h) \
++  include/asm-generic/qspinlock_types.h \
++  include/asm-generic/qrwlock_types.h \
++  include/asm-generic/ptrace.h \
++  arch/x86/include/asm/cpufeature.h \
++    $(wildcard include/config/x86/feature/names.h) \
++    $(wildcard include/config/x86/debug/static/cpu/has.h) \
++  arch/x86/include/asm/required-features.h \
++    $(wildcard include/config/x86/minimum/cpu/family.h) \
++    $(wildcard include/config/math/emulation.h) \
++    $(wildcard include/config/x86/cmpxchg64.h) \
++    $(wildcard include/config/x86/use/3dnow.h) \
++    $(wildcard include/config/x86/p6/nop.h) \
++    $(wildcard include/config/matom.h) \
++  arch/x86/include/asm/disabled-features.h \
++    $(wildcard include/config/x86/intel/mpx.h) \
++  arch/x86/include/asm/rmwcc.h \
++  arch/x86/include/asm/barrier.h \
++    $(wildcard include/config/x86/ppro/fence.h) \
++  arch/x86/include/asm/nops.h \
++    $(wildcard include/config/mk7.h) \
++  include/asm-generic/bitops/find.h \
++    $(wildcard include/config/generic/find/first/bit.h) \
++  include/asm-generic/bitops/sched.h \
++  arch/x86/include/asm/arch_hweight.h \
++  include/asm-generic/bitops/const_hweight.h \
++  include/asm-generic/bitops/le.h \
++  arch/x86/include/uapi/asm/byteorder.h \
++  include/linux/byteorder/little_endian.h \
++  include/uapi/linux/byteorder/little_endian.h \
++  include/linux/swab.h \
++  include/uapi/linux/swab.h \
++  arch/x86/include/uapi/asm/swab.h \
++  include/linux/byteorder/generic.h \
++  include/asm-generic/bitops/ext2-atomic-setbit.h \
++  include/linux/log2.h \
++    $(wildcard include/config/arch/has/ilog2/u32.h) \
++    $(wildcard include/config/arch/has/ilog2/u64.h) \
++  include/linux/typecheck.h \
++  include/linux/printk.h \
++    $(wildcard include/config/message/loglevel/default.h) \
++    $(wildcard include/config/early/printk.h) \
++    $(wildcard include/config/printk.h) \
++    $(wildcard include/config/dynamic/debug.h) \
++  include/linux/init.h \
++    $(wildcard include/config/broken/rodata.h) \
++    $(wildcard include/config/lto.h) \
++  include/linux/kern_levels.h \
++  include/linux/cache.h \
++    $(wildcard include/config/arch/has/cache/line/size.h) \
++  include/uapi/linux/kernel.h \
++  include/uapi/linux/sysinfo.h \
++  include/linux/dynamic_debug.h \
++  include/linux/stat.h \
++  arch/x86/include/uapi/asm/stat.h \
++  include/uapi/linux/stat.h \
++  include/linux/time.h \
++    $(wildcard include/config/arch/uses/gettimeoffset.h) \
++  include/linux/seqlock.h \
++    $(wildcard include/config/debug/lock/alloc.h) \
++  include/linux/spinlock.h \
++    $(wildcard include/config/debug/spinlock.h) \
++    $(wildcard include/config/generic/lockbreak.h) \
++    $(wildcard include/config/preempt.h) \
++  include/linux/preempt.h \
++    $(wildcard include/config/preempt/count.h) \
++    $(wildcard include/config/debug/preempt.h) \
++    $(wildcard include/config/preempt/tracer.h) \
++    $(wildcard include/config/preempt/notifiers.h) \
++  arch/x86/include/asm/preempt.h \
++  arch/x86/include/asm/percpu.h \
++    $(wildcard include/config/x86/64/smp.h) \
++  include/asm-generic/percpu.h \
++    $(wildcard include/config/have/setup/per/cpu/area.h) \
++  include/linux/threads.h \
++    $(wildcard include/config/base/small.h) \
++  include/linux/percpu-defs.h \
++    $(wildcard include/config/debug/force/weak/per/cpu.h) \
++  include/linux/thread_info.h \
++    $(wildcard include/config/compat.h) \
++    $(wildcard include/config/debug/stack/usage.h) \
++  include/linux/bug.h \
++  arch/x86/include/asm/bug.h \
++    $(wildcard include/config/debug/bugverbose.h) \
++  include/asm-generic/bug.h \
++    $(wildcard include/config/bug.h) \
++    $(wildcard include/config/generic/bug/relative/pointers.h) \
++  arch/x86/include/asm/thread_info.h \
++    $(wildcard include/config/ia32/emulation.h) \
++  arch/x86/include/asm/page.h \
++  arch/x86/include/asm/page_64.h \
++    $(wildcard include/config/debug/virtual.h) \
++    $(wildcard include/config/flatmem.h) \
++    $(wildcard include/config/x86/vsyscall/emulation.h) \
++  include/linux/range.h \
++  include/asm-generic/memory_model.h \
++    $(wildcard include/config/discontigmem.h) \
++    $(wildcard include/config/sparsemem/vmemmap.h) \
++  include/asm-generic/getorder.h \
++  arch/x86/include/asm/processor.h \
++    $(wildcard include/config/m486.h) \
++    $(wildcard include/config/xen.h) \
++  arch/x86/include/asm/math_emu.h \
++  arch/x86/include/uapi/asm/sigcontext.h \
++  arch/x86/include/asm/current.h \
++  arch/x86/include/asm/msr.h \
++  arch/x86/include/asm/msr-index.h \
++    $(wildcard include/config/tdp/nominal.h) \
++    $(wildcard include/config/tdp/level/1.h) \
++    $(wildcard include/config/tdp/level/2.h) \
++    $(wildcard include/config/tdp/control.h) \
++    $(wildcard include/config/tdp/level1.h) \
++    $(wildcard include/config/tdp/level2.h) \
++  arch/x86/include/uapi/asm/errno.h \
++  include/uapi/asm-generic/errno.h \
++  include/uapi/asm-generic/errno-base.h \
++  arch/x86/include/asm/cpumask.h \
++  include/linux/cpumask.h \
++    $(wildcard include/config/cpumask/offstack.h) \
++    $(wildcard include/config/hotplug/cpu.h) \
++    $(wildcard include/config/debug/per/cpu/maps.h) \
++  include/linux/bitmap.h \
++  include/linux/string.h \
++    $(wildcard include/config/binary/printf.h) \
++  include/uapi/linux/string.h \
++  arch/x86/include/asm/string.h \
++  arch/x86/include/asm/string_64.h \
++  arch/x86/include/uapi/asm/msr.h \
++  include/uapi/linux/ioctl.h \
++  arch/x86/include/uapi/asm/ioctl.h \
++  include/asm-generic/ioctl.h \
++  include/uapi/asm-generic/ioctl.h \
++  arch/x86/include/asm/paravirt.h \
++  arch/x86/include/asm/special_insns.h \
++  arch/x86/include/asm/fpu/types.h \
++  include/linux/personality.h \
++  include/uapi/linux/personality.h \
++  include/linux/math64.h \
++    $(wildcard include/config/arch/supports/int128.h) \
++  arch/x86/include/asm/div64.h \
++  include/asm-generic/div64.h \
++  include/linux/err.h \
++  include/linux/irqflags.h \
++    $(wildcard include/config/trace/irqflags.h) \
++    $(wildcard include/config/irqsoff/tracer.h) \
++    $(wildcard include/config/trace/irqflags/support.h) \
++  arch/x86/include/asm/irqflags.h \
++  include/linux/atomic.h \
++    $(wildcard include/config/generic/atomic64.h) \
++  arch/x86/include/asm/atomic.h \
++  arch/x86/include/asm/cmpxchg.h \
++  arch/x86/include/asm/cmpxchg_64.h \
++  arch/x86/include/asm/atomic64_64.h \
++  include/asm-generic/atomic-long.h \
++  include/linux/bottom_half.h \
++  include/linux/spinlock_types.h \
++  include/linux/lockdep.h \
++    $(wildcard include/config/lockdep.h) \
++    $(wildcard include/config/lock/stat.h) \
++  include/linux/rwlock_types.h \
++  arch/x86/include/asm/spinlock.h \
++  include/linux/jump_label.h \
++    $(wildcard include/config/jump/label.h) \
++  arch/x86/include/asm/jump_label.h \
++  arch/x86/include/asm/qspinlock.h \
++  include/asm-generic/qspinlock.h \
++  arch/x86/include/asm/qrwlock.h \
++  include/asm-generic/qrwlock.h \
++  include/linux/rwlock.h \
++  include/linux/spinlock_api_smp.h \
++    $(wildcard include/config/inline/spin/lock.h) \
++    $(wildcard include/config/inline/spin/lock/bh.h) \
++    $(wildcard include/config/inline/spin/lock/irq.h) \
++    $(wildcard include/config/inline/spin/lock/irqsave.h) \
++    $(wildcard include/config/inline/spin/trylock.h) \
++    $(wildcard include/config/inline/spin/trylock/bh.h) \
++    $(wildcard include/config/uninline/spin/unlock.h) \
++    $(wildcard include/config/inline/spin/unlock/bh.h) \
++    $(wildcard include/config/inline/spin/unlock/irq.h) \
++    $(wildcard include/config/inline/spin/unlock/irqrestore.h) \
++  include/linux/rwlock_api_smp.h \
++    $(wildcard include/config/inline/read/lock.h) \
++    $(wildcard include/config/inline/write/lock.h) \
++    $(wildcard include/config/inline/read/lock/bh.h) \
++    $(wildcard include/config/inline/write/lock/bh.h) \
++    $(wildcard include/config/inline/read/lock/irq.h) \
++    $(wildcard include/config/inline/write/lock/irq.h) \
++    $(wildcard include/config/inline/read/lock/irqsave.h) \
++    $(wildcard include/config/inline/write/lock/irqsave.h) \
++    $(wildcard include/config/inline/read/trylock.h) \
++    $(wildcard include/config/inline/write/trylock.h) \
++    $(wildcard include/config/inline/read/unlock.h) \
++    $(wildcard include/config/inline/write/unlock.h) \
++    $(wildcard include/config/inline/read/unlock/bh.h) \
++    $(wildcard include/config/inline/write/unlock/bh.h) \
++    $(wildcard include/config/inline/read/unlock/irq.h) \
++    $(wildcard include/config/inline/write/unlock/irq.h) \
++    $(wildcard include/config/inline/read/unlock/irqrestore.h) \
++    $(wildcard include/config/inline/write/unlock/irqrestore.h) \
++  include/linux/time64.h \
++  include/uapi/linux/time.h \
++  include/linux/uidgid.h \
++    $(wildcard include/config/multiuser.h) \
++    $(wildcard include/config/user/ns.h) \
++  include/linux/highuid.h \
++  include/linux/kmod.h \
++  include/linux/gfp.h \
++    $(wildcard include/config/highmem.h) \
++    $(wildcard include/config/zone/dma.h) \
++    $(wildcard include/config/zone/dma32.h) \
++    $(wildcard include/config/numa.h) \
++    $(wildcard include/config/deferred/struct/page/init.h) \
++    $(wildcard include/config/pm/sleep.h) \
++    $(wildcard include/config/cma.h) \
++  include/linux/mmdebug.h \
++    $(wildcard include/config/debug/vm.h) \
++  include/linux/mmzone.h \
++    $(wildcard include/config/force/max/zoneorder.h) \
++    $(wildcard include/config/memory/isolation.h) \
++    $(wildcard include/config/memcg.h) \
++    $(wildcard include/config/zone/device.h) \
++    $(wildcard include/config/memory/hotplug.h) \
++    $(wildcard include/config/compaction.h) \
++    $(wildcard include/config/flat/node/mem/map.h) \
++    $(wildcard include/config/page/extension.h) \
++    $(wildcard include/config/no/bootmem.h) \
++    $(wildcard include/config/numa/balancing.h) \
++    $(wildcard include/config/have/memory/present.h) \
++    $(wildcard include/config/have/memoryless/nodes.h) \
++    $(wildcard include/config/need/node/memmap/size.h) \
++    $(wildcard include/config/have/memblock/node/map.h) \
++    $(wildcard include/config/need/multiple/nodes.h) \
++    $(wildcard include/config/have/arch/early/pfn/to/nid.h) \
++    $(wildcard include/config/sparsemem/extreme.h) \
++    $(wildcard include/config/have/arch/pfn/valid.h) \
++    $(wildcard include/config/holes/in/zone.h) \
++    $(wildcard include/config/arch/has/holes/memorymodel.h) \
++  include/linux/wait.h \
++  include/uapi/linux/wait.h \
++  include/linux/numa.h \
++    $(wildcard include/config/nodes/shift.h) \
++  include/linux/nodemask.h \
++    $(wildcard include/config/movable/node.h) \
++  include/linux/pageblock-flags.h \
++    $(wildcard include/config/hugetlb/page.h) \
++    $(wildcard include/config/hugetlb/page/size/variable.h) \
++  include/linux/page-flags-layout.h \
++  include/generated/bounds.h \
++  include/linux/memory_hotplug.h \
++    $(wildcard include/config/memory/hotremove.h) \
++    $(wildcard include/config/have/arch/nodedata/extension.h) \
++    $(wildcard include/config/have/bootmem/info/node.h) \
++  include/linux/notifier.h \
++  include/linux/errno.h \
++  include/uapi/linux/errno.h \
++  include/linux/mutex.h \
++    $(wildcard include/config/debug/mutexes.h) \
++    $(wildcard include/config/mutex/spin/on/owner.h) \
++  include/linux/osq_lock.h \
++  include/linux/rwsem.h \
++    $(wildcard include/config/rwsem/spin/on/owner.h) \
++    $(wildcard include/config/rwsem/generic/spinlock.h) \
++  arch/x86/include/asm/rwsem.h \
++  include/linux/srcu.h \
++  include/linux/rcupdate.h \
++    $(wildcard include/config/tiny/rcu.h) \
++    $(wildcard include/config/tree/rcu.h) \
++    $(wildcard include/config/preempt/rcu.h) \
++    $(wildcard include/config/rcu/trace.h) \
++    $(wildcard include/config/rcu/stall/common.h) \
++    $(wildcard include/config/no/hz/full.h) \
++    $(wildcard include/config/rcu/nocb/cpu.h) \
++    $(wildcard include/config/tasks/rcu.h) \
++    $(wildcard include/config/debug/objects/rcu/head.h) \
++    $(wildcard include/config/prove/rcu.h) \
++    $(wildcard include/config/rcu/boost.h) \
++    $(wildcard include/config/rcu/nocb/cpu/all.h) \
++    $(wildcard include/config/no/hz/full/sysidle.h) \
++  include/linux/completion.h \
++  include/linux/debugobjects.h \
++    $(wildcard include/config/debug/objects.h) \
++    $(wildcard include/config/debug/objects/free.h) \
++  include/linux/ktime.h \
++  include/linux/jiffies.h \
++  include/linux/timex.h \
++  include/uapi/linux/timex.h \
++  include/uapi/linux/param.h \
++  arch/x86/include/uapi/asm/param.h \
++  include/asm-generic/param.h \
++    $(wildcard include/config/hz.h) \
++  include/uapi/asm-generic/param.h \
++  arch/x86/include/asm/timex.h \
++  arch/x86/include/asm/tsc.h \
++    $(wildcard include/config/x86/tsc.h) \
++  include/generated/timeconst.h \
++  include/linux/timekeeping.h \
++  include/linux/rcutree.h \
++  include/linux/workqueue.h \
++    $(wildcard include/config/debug/objects/work.h) \
++    $(wildcard include/config/freezer.h) \
++  include/linux/timer.h \
++    $(wildcard include/config/timer/stats.h) \
++    $(wildcard include/config/debug/objects/timers.h) \
++    $(wildcard include/config/no/hz/common.h) \
++  include/linux/sysctl.h \
++    $(wildcard include/config/sysctl.h) \
++  include/linux/rbtree.h \
++  include/uapi/linux/sysctl.h \
++  arch/x86/include/asm/mmzone.h \
++  arch/x86/include/asm/mmzone_64.h \
++  arch/x86/include/asm/smp.h \
++    $(wildcard include/config/x86/io/apic.h) \
++    $(wildcard include/config/x86/32/smp.h) \
++    $(wildcard include/config/debug/nmi/selftest.h) \
++  arch/x86/include/asm/mpspec.h \
++    $(wildcard include/config/eisa.h) \
++    $(wildcard include/config/x86/mpparse.h) \
++  arch/x86/include/asm/mpspec_def.h \
++  arch/x86/include/asm/x86_init.h \
++  arch/x86/include/uapi/asm/bootparam.h \
++  include/linux/screen_info.h \
++  include/uapi/linux/screen_info.h \
++  include/linux/apm_bios.h \
++  include/uapi/linux/apm_bios.h \
++  include/linux/edd.h \
++  include/uapi/linux/edd.h \
++  arch/x86/include/asm/e820.h \
++    $(wildcard include/config/efi.h) \
++    $(wildcard include/config/hibernation.h) \
++  arch/x86/include/uapi/asm/e820.h \
++    $(wildcard include/config/x86/pmem/legacy.h) \
++    $(wildcard include/config/intel/txt.h) \
++  include/linux/ioport.h \
++  arch/x86/include/asm/ist.h \
++  arch/x86/include/uapi/asm/ist.h \
++  include/video/edid.h \
++    $(wildcard include/config/x86.h) \
++  include/uapi/video/edid.h \
++  arch/x86/include/asm/apicdef.h \
++  arch/x86/include/asm/apic.h \
++    $(wildcard include/config/x86/x2apic.h) \
++  include/linux/pm.h \
++    $(wildcard include/config/vt/console/sleep.h) \
++    $(wildcard include/config/pm.h) \
++    $(wildcard include/config/pm/clk.h) \
++    $(wildcard include/config/pm/generic/domains.h) \
++  arch/x86/include/asm/fixmap.h \
++    $(wildcard include/config/paravirt/clock.h) \
++    $(wildcard include/config/provide/ohci1394/dma/init.h) \
++    $(wildcard include/config/pci/mmconfig.h) \
++    $(wildcard include/config/x86/intel/mid.h) \
++  arch/x86/include/asm/acpi.h \
++    $(wildcard include/config/acpi/apei.h) \
++    $(wildcard include/config/acpi.h) \
++    $(wildcard include/config/acpi/numa.h) \
++  include/acpi/pdc_intel.h \
++  arch/x86/include/asm/numa.h \
++    $(wildcard include/config/numa/emu.h) \
++  arch/x86/include/asm/topology.h \
++  include/asm-generic/topology.h \
++  arch/x86/include/asm/mmu.h \
++    $(wildcard include/config/modify/ldt/syscall.h) \
++  arch/x86/include/asm/realmode.h \
++    $(wildcard include/config/acpi/sleep.h) \
++  arch/x86/include/asm/io.h \
++    $(wildcard include/config/mtrr.h) \
++  arch/x86/include/generated/asm/early_ioremap.h \
++  include/asm-generic/early_ioremap.h \
++    $(wildcard include/config/generic/early/ioremap.h) \
++  include/asm-generic/iomap.h \
++    $(wildcard include/config/has/ioport/map.h) \
++    $(wildcard include/config/pci.h) \
++    $(wildcard include/config/generic/iomap.h) \
++  include/asm-generic/pci_iomap.h \
++    $(wildcard include/config/no/generic/pci/ioport/map.h) \
++    $(wildcard include/config/generic/pci/iomap.h) \
++  include/xen/xen.h \
++    $(wildcard include/config/xen/dom0.h) \
++    $(wildcard include/config/xen/pvh.h) \
++  include/xen/interface/xen.h \
++  arch/x86/include/asm/xen/interface.h \
++  arch/x86/include/asm/xen/interface_64.h \
++  arch/x86/include/asm/pvclock-abi.h \
++  arch/x86/include/asm/xen/hypervisor.h \
++  arch/x86/include/asm/pvclock.h \
++  include/linux/clocksource.h \
++    $(wildcard include/config/arch/clocksource/data.h) \
++    $(wildcard include/config/clocksource/watchdog.h) \
++    $(wildcard include/config/clksrc/probe.h) \
++  arch/x86/include/asm/clocksource.h \
++  arch/x86/include/uapi/asm/vsyscall.h \
++  include/asm-generic/fixmap.h \
++  arch/x86/include/asm/idle.h \
++  arch/x86/include/asm/io_apic.h \
++  arch/x86/include/asm/irq_vectors.h \
++    $(wildcard include/config/have/kvm.h) \
++    $(wildcard include/config/pci/msi.h) \
++  include/linux/topology.h \
++    $(wildcard include/config/use/percpu/numa/node/id.h) \
++    $(wildcard include/config/sched/smt.h) \
++  include/linux/smp.h \
++    $(wildcard include/config/up/late/init.h) \
++  include/linux/llist.h \
++    $(wildcard include/config/arch/have/nmi/safe/cmpxchg.h) \
++  include/linux/percpu.h \
++    $(wildcard include/config/need/per/cpu/embed/first/chunk.h) \
++    $(wildcard include/config/need/per/cpu/page/first/chunk.h) \
++  include/linux/pfn.h \
++  include/linux/elf.h \
++  arch/x86/include/asm/elf.h \
++    $(wildcard include/config/x86/x32/abi.h) \
++  arch/x86/include/asm/user.h \
++  arch/x86/include/asm/user_64.h \
++  arch/x86/include/uapi/asm/auxvec.h \
++  arch/x86/include/asm/vdso.h \
++    $(wildcard include/config/x86/x32.h) \
++  include/linux/mm_types.h \
++    $(wildcard include/config/split/ptlock/cpus.h) \
++    $(wildcard include/config/arch/enable/split/pmd/ptlock.h) \
++    $(wildcard include/config/have/cmpxchg/double.h) \
++    $(wildcard include/config/have/aligned/struct/page.h) \
++    $(wildcard include/config/transparent/hugepage.h) \
++    $(wildcard include/config/userfaultfd.h) \
++    $(wildcard include/config/aio.h) \
++    $(wildcard include/config/mmu/notifier.h) \
++  include/linux/auxvec.h \
++  include/uapi/linux/auxvec.h \
++  include/linux/uprobes.h \
++    $(wildcard include/config/uprobes.h) \
++  arch/x86/include/asm/uprobes.h \
++  include/uapi/linux/elf.h \
++  include/uapi/linux/elf-em.h \
++  include/linux/kobject.h \
++    $(wildcard include/config/uevent/helper.h) \
++    $(wildcard include/config/debug/kobject/release.h) \
++  include/linux/sysfs.h \
++  include/linux/kernfs.h \
++    $(wildcard include/config/kernfs.h) \
++  include/linux/idr.h \
++  include/linux/kobject_ns.h \
++  include/linux/kref.h \
++  include/linux/moduleparam.h \
++    $(wildcard include/config/alpha.h) \
++    $(wildcard include/config/ia64.h) \
++    $(wildcard include/config/ppc64.h) \
++  include/linux/rbtree_latch.h \
++  arch/x86/include/asm/module.h \
++    $(wildcard include/config/m586.h) \
++    $(wildcard include/config/m586tsc.h) \
++    $(wildcard include/config/m586mmx.h) \
++    $(wildcard include/config/mcore2.h) \
++    $(wildcard include/config/m686.h) \
++    $(wildcard include/config/mpentiumii.h) \
++    $(wildcard include/config/mpentiumiii.h) \
++    $(wildcard include/config/mpentiumm.h) \
++    $(wildcard include/config/mpentium4.h) \
++    $(wildcard include/config/mk6.h) \
++    $(wildcard include/config/mk8.h) \
++    $(wildcard include/config/melan.h) \
++    $(wildcard include/config/mcrusoe.h) \
++    $(wildcard include/config/mefficeon.h) \
++    $(wildcard include/config/mwinchipc6.h) \
++    $(wildcard include/config/mwinchip3d.h) \
++    $(wildcard include/config/mcyrixiii.h) \
++    $(wildcard include/config/mviac3/2.h) \
++    $(wildcard include/config/mviac7.h) \
++    $(wildcard include/config/mgeodegx1.h) \
++    $(wildcard include/config/mgeode/lx.h) \
++  include/asm-generic/module.h \
++    $(wildcard include/config/have/mod/arch/specific.h) \
++    $(wildcard include/config/modules/use/elf/rel.h) \
++    $(wildcard include/config/modules/use/elf/rela.h) \
++  include/linux/vermagic.h \
++  include/generated/utsrelease.h \
++
++/home/public/workspace/github/test/170301/ycbus.mod.o: $(deps_/home/public/workspace/github/test/170301/ycbus.mod.o)
++
++$(deps_/home/public/workspace/github/test/170301/ycbus.mod.o):
+diff --git a/170301/.ycbus.o.cmd b/170301/.ycbus.o.cmd
+new file mode 100644
+index 0000000..e075eb8
+--- /dev/null
++++ b/170301/.ycbus.o.cmd
+@@ -0,0 +1,618 @@
++cmd_/home/public/workspace/github/test/170301/ycbus.o := gcc -Wp,-MD,/home/public/workspace/github/test/170301/.ycbus.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I./arch/x86/include -Iarch/x86/include/generated/uapi -Iarch/x86/include/generated  -Iinclude -I./arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I./include/uapi -Iinclude/generated/uapi -include ./include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -m64 -falign-jumps=1 -falign-loops=1 -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_SSSE3=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -DCONFIG_AS_SHA1_NI=1 -DCONFIG_AS_SHA256_NI=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -fno-delete-null-pointer-checks -Wno-maybe-uninitialized -O2 --param=allow-store-data-races=0 -Wframe-larger-than=1024 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ycbus)"  -D"KBUILD_MODNAME=KBUILD_STR(ycbus)" -c -o /home/public/workspace/github/test/170301/.tmp_ycbus.o /home/public/workspace/github/test/170301/ycbus.c
++
++source_/home/public/workspace/github/test/170301/ycbus.o := /home/public/workspace/github/test/170301/ycbus.c
++
++deps_/home/public/workspace/github/test/170301/ycbus.o := \
++  include/linux/device.h \
++    $(wildcard include/config/debug/devres.h) \
++    $(wildcard include/config/generic/msi/irq/domain.h) \
++    $(wildcard include/config/pinctrl.h) \
++    $(wildcard include/config/generic/msi/irq.h) \
++    $(wildcard include/config/numa.h) \
++    $(wildcard include/config/dma/cma.h) \
++    $(wildcard include/config/pm/sleep.h) \
++    $(wildcard include/config/of.h) \
++    $(wildcard include/config/devtmpfs.h) \
++    $(wildcard include/config/printk.h) \
++    $(wildcard include/config/dynamic/debug.h) \
++    $(wildcard include/config/sysfs/deprecated.h) \
++  include/linux/ioport.h \
++    $(wildcard include/config/memory/hotremove.h) \
++  include/linux/compiler.h \
++    $(wildcard include/config/sparse/rcu/pointer.h) \
++    $(wildcard include/config/trace/branch/profiling.h) \
++    $(wildcard include/config/profile/all/branches.h) \
++    $(wildcard include/config/kasan.h) \
++    $(wildcard include/config/enable/must/check.h) \
++    $(wildcard include/config/enable/warn/deprecated.h) \
++    $(wildcard include/config/kprobes.h) \
++  include/linux/compiler-gcc.h \
++    $(wildcard include/config/arch/supports/optimized/inlining.h) \
++    $(wildcard include/config/optimize/inlining.h) \
++    $(wildcard include/config/gcov/kernel.h) \
++    $(wildcard include/config/arch/use/builtin/bswap.h) \
++  include/uapi/linux/types.h \
++  arch/x86/include/uapi/asm/types.h \
++  include/uapi/asm-generic/types.h \
++  include/asm-generic/int-ll64.h \
++  include/uapi/asm-generic/int-ll64.h \
++  arch/x86/include/uapi/asm/bitsperlong.h \
++  include/asm-generic/bitsperlong.h \
++    $(wildcard include/config/64bit.h) \
++  include/uapi/asm-generic/bitsperlong.h \
++  include/uapi/linux/posix_types.h \
++  include/linux/stddef.h \
++  include/uapi/linux/stddef.h \
++  arch/x86/include/asm/posix_types.h \
++    $(wildcard include/config/x86/32.h) \
++  arch/x86/include/uapi/asm/posix_types_64.h \
++  include/uapi/asm-generic/posix_types.h \
++  include/linux/types.h \
++    $(wildcard include/config/have/uid16.h) \
++    $(wildcard include/config/uid16.h) \
++    $(wildcard include/config/lbdaf.h) \
++    $(wildcard include/config/arch/dma/addr/t/64bit.h) \
++    $(wildcard include/config/phys/addr/t/64bit.h) \
++  include/linux/kobject.h \
++    $(wildcard include/config/uevent/helper.h) \
++    $(wildcard include/config/debug/kobject/release.h) \
++  include/linux/list.h \
++    $(wildcard include/config/debug/list.h) \
++  include/linux/poison.h \
++    $(wildcard include/config/illegal/pointer/value.h) \
++  include/uapi/linux/const.h \
++  include/linux/kernel.h \
++    $(wildcard include/config/preempt/voluntary.h) \
++    $(wildcard include/config/debug/atomic/sleep.h) \
++    $(wildcard include/config/mmu.h) \
++    $(wildcard include/config/prove/locking.h) \
++    $(wildcard include/config/panic/timeout.h) \
++    $(wildcard include/config/tracing.h) \
++    $(wildcard include/config/ftrace/mcount/record.h) \
++  /usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h \
++  include/linux/linkage.h \
++  include/linux/stringify.h \
++  include/linux/export.h \
++    $(wildcard include/config/have/underscore/symbol/prefix.h) \
++    $(wildcard include/config/modules.h) \
++    $(wildcard include/config/modversions.h) \
++    $(wildcard include/config/unused/symbols.h) \
++  arch/x86/include/asm/linkage.h \
++    $(wildcard include/config/x86/64.h) \
++    $(wildcard include/config/x86/alignment/16.h) \
++  include/linux/bitops.h \
++  arch/x86/include/asm/bitops.h \
++    $(wildcard include/config/x86/cmov.h) \
++  arch/x86/include/asm/alternative.h \
++    $(wildcard include/config/smp.h) \
++    $(wildcard include/config/paravirt.h) \
++  arch/x86/include/asm/asm.h \
++  arch/x86/include/asm/ptrace.h \
++    $(wildcard include/config/x86/debugctlmsr.h) \
++  arch/x86/include/asm/segment.h \
++    $(wildcard include/config/cc/stackprotector.h) \
++    $(wildcard include/config/x86/32/lazy/gs.h) \
++  arch/x86/include/asm/cache.h \
++    $(wildcard include/config/x86/l1/cache/shift.h) \
++    $(wildcard include/config/x86/internode/cache/shift.h) \
++    $(wildcard include/config/x86/vsmp.h) \
++  arch/x86/include/asm/page_types.h \
++    $(wildcard include/config/physical/start.h) \
++    $(wildcard include/config/physical/align.h) \
++  arch/x86/include/asm/page_64_types.h \
++    $(wildcard include/config/randomize/base.h) \
++    $(wildcard include/config/randomize/base/max/offset.h) \
++  arch/x86/include/uapi/asm/ptrace.h \
++  arch/x86/include/uapi/asm/ptrace-abi.h \
++  arch/x86/include/asm/processor-flags.h \
++    $(wildcard include/config/vm86.h) \
++  arch/x86/include/uapi/asm/processor-flags.h \
++  arch/x86/include/asm/paravirt_types.h \
++    $(wildcard include/config/x86/local/apic.h) \
++    $(wildcard include/config/pgtable/levels.h) \
++    $(wildcard include/config/x86/pae.h) \
++    $(wildcard include/config/queued/spinlocks.h) \
++    $(wildcard include/config/paravirt/debug.h) \
++  arch/x86/include/asm/desc_defs.h \
++  arch/x86/include/asm/kmap_types.h \
++    $(wildcard include/config/debug/highmem.h) \
++  include/asm-generic/kmap_types.h \
++  arch/x86/include/asm/pgtable_types.h \
++    $(wildcard include/config/kmemcheck.h) \
++    $(wildcard include/config/mem/soft/dirty.h) \
++    $(wildcard include/config/proc/fs.h) \
++  arch/x86/include/asm/pgtable_64_types.h \
++  arch/x86/include/asm/sparsemem.h \
++    $(wildcard include/config/sparsemem.h) \
++  arch/x86/include/asm/spinlock_types.h \
++    $(wildcard include/config/paravirt/spinlocks.h) \
++    $(wildcard include/config/nr/cpus.h) \
++  include/asm-generic/qspinlock_types.h \
++  include/asm-generic/qrwlock_types.h \
++  include/asm-generic/ptrace.h \
++  arch/x86/include/asm/cpufeature.h \
++    $(wildcard include/config/x86/feature/names.h) \
++    $(wildcard include/config/x86/debug/static/cpu/has.h) \
++  arch/x86/include/asm/required-features.h \
++    $(wildcard include/config/x86/minimum/cpu/family.h) \
++    $(wildcard include/config/math/emulation.h) \
++    $(wildcard include/config/x86/cmpxchg64.h) \
++    $(wildcard include/config/x86/use/3dnow.h) \
++    $(wildcard include/config/x86/p6/nop.h) \
++    $(wildcard include/config/matom.h) \
++  arch/x86/include/asm/disabled-features.h \
++    $(wildcard include/config/x86/intel/mpx.h) \
++  arch/x86/include/asm/rmwcc.h \
++  arch/x86/include/asm/barrier.h \
++    $(wildcard include/config/x86/ppro/fence.h) \
++  arch/x86/include/asm/nops.h \
++    $(wildcard include/config/mk7.h) \
++  include/asm-generic/bitops/find.h \
++    $(wildcard include/config/generic/find/first/bit.h) \
++  include/asm-generic/bitops/sched.h \
++  arch/x86/include/asm/arch_hweight.h \
++  include/asm-generic/bitops/const_hweight.h \
++  include/asm-generic/bitops/le.h \
++  arch/x86/include/uapi/asm/byteorder.h \
++  include/linux/byteorder/little_endian.h \
++  include/uapi/linux/byteorder/little_endian.h \
++  include/linux/swab.h \
++  include/uapi/linux/swab.h \
++  arch/x86/include/uapi/asm/swab.h \
++  include/linux/byteorder/generic.h \
++  include/asm-generic/bitops/ext2-atomic-setbit.h \
++  include/linux/log2.h \
++    $(wildcard include/config/arch/has/ilog2/u32.h) \
++    $(wildcard include/config/arch/has/ilog2/u64.h) \
++  include/linux/typecheck.h \
++  include/linux/printk.h \
++    $(wildcard include/config/message/loglevel/default.h) \
++    $(wildcard include/config/early/printk.h) \
++  include/linux/init.h \
++    $(wildcard include/config/broken/rodata.h) \
++    $(wildcard include/config/lto.h) \
++  include/linux/kern_levels.h \
++  include/linux/cache.h \
++    $(wildcard include/config/arch/has/cache/line/size.h) \
++  include/uapi/linux/kernel.h \
++  include/uapi/linux/sysinfo.h \
++  include/linux/dynamic_debug.h \
++  include/linux/sysfs.h \
++    $(wildcard include/config/debug/lock/alloc.h) \
++    $(wildcard include/config/sysfs.h) \
++  include/linux/kernfs.h \
++    $(wildcard include/config/kernfs.h) \
++  include/linux/err.h \
++  arch/x86/include/uapi/asm/errno.h \
++  include/uapi/asm-generic/errno.h \
++  include/uapi/asm-generic/errno-base.h \
++  include/linux/mutex.h \
++    $(wildcard include/config/debug/mutexes.h) \
++    $(wildcard include/config/mutex/spin/on/owner.h) \
++  arch/x86/include/asm/current.h \
++  arch/x86/include/asm/percpu.h \
++    $(wildcard include/config/x86/64/smp.h) \
++  include/asm-generic/percpu.h \
++    $(wildcard include/config/debug/preempt.h) \
++    $(wildcard include/config/have/setup/per/cpu/area.h) \
++  include/linux/threads.h \
++    $(wildcard include/config/base/small.h) \
++  include/linux/percpu-defs.h \
++    $(wildcard include/config/debug/force/weak/per/cpu.h) \
++  include/linux/spinlock_types.h \
++    $(wildcard include/config/generic/lockbreak.h) \
++    $(wildcard include/config/debug/spinlock.h) \
++  include/linux/lockdep.h \
++    $(wildcard include/config/lockdep.h) \
++    $(wildcard include/config/lock/stat.h) \
++    $(wildcard include/config/trace/irqflags.h) \
++  include/linux/rwlock_types.h \
++  include/linux/atomic.h \
++    $(wildcard include/config/generic/atomic64.h) \
++  arch/x86/include/asm/atomic.h \
++  arch/x86/include/asm/processor.h \
++    $(wildcard include/config/m486.h) \
++    $(wildcard include/config/xen.h) \
++  arch/x86/include/asm/math_emu.h \
++  arch/x86/include/uapi/asm/sigcontext.h \
++  arch/x86/include/asm/page.h \
++  arch/x86/include/asm/page_64.h \
++    $(wildcard include/config/debug/virtual.h) \
++    $(wildcard include/config/flatmem.h) \
++    $(wildcard include/config/x86/vsyscall/emulation.h) \
++  include/linux/range.h \
++  include/asm-generic/memory_model.h \
++    $(wildcard include/config/discontigmem.h) \
++    $(wildcard include/config/sparsemem/vmemmap.h) \
++  include/asm-generic/getorder.h \
++  arch/x86/include/asm/msr.h \
++  arch/x86/include/asm/msr-index.h \
++    $(wildcard include/config/tdp/nominal.h) \
++    $(wildcard include/config/tdp/level/1.h) \
++    $(wildcard include/config/tdp/level/2.h) \
++    $(wildcard include/config/tdp/control.h) \
++    $(wildcard include/config/tdp/level1.h) \
++    $(wildcard include/config/tdp/level2.h) \
++  arch/x86/include/asm/cpumask.h \
++  include/linux/cpumask.h \
++    $(wildcard include/config/cpumask/offstack.h) \
++    $(wildcard include/config/hotplug/cpu.h) \
++    $(wildcard include/config/debug/per/cpu/maps.h) \
++  include/linux/bitmap.h \
++  include/linux/string.h \
++    $(wildcard include/config/binary/printf.h) \
++  include/uapi/linux/string.h \
++  arch/x86/include/asm/string.h \
++  arch/x86/include/asm/string_64.h \
++  include/linux/bug.h \
++    $(wildcard include/config/generic/bug.h) \
++  arch/x86/include/asm/bug.h \
++    $(wildcard include/config/debug/bugverbose.h) \
++  include/asm-generic/bug.h \
++    $(wildcard include/config/bug.h) \
++    $(wildcard include/config/generic/bug/relative/pointers.h) \
++  arch/x86/include/uapi/asm/msr.h \
++  include/uapi/linux/ioctl.h \
++  arch/x86/include/uapi/asm/ioctl.h \
++  include/asm-generic/ioctl.h \
++  include/uapi/asm-generic/ioctl.h \
++  arch/x86/include/asm/paravirt.h \
++  arch/x86/include/asm/special_insns.h \
++  arch/x86/include/asm/fpu/types.h \
++  include/linux/personality.h \
++  include/uapi/linux/personality.h \
++  include/linux/math64.h \
++    $(wildcard include/config/arch/supports/int128.h) \
++  arch/x86/include/asm/div64.h \
++  include/asm-generic/div64.h \
++  include/linux/irqflags.h \
++    $(wildcard include/config/irqsoff/tracer.h) \
++    $(wildcard include/config/preempt/tracer.h) \
++    $(wildcard include/config/trace/irqflags/support.h) \
++  arch/x86/include/asm/irqflags.h \
++  arch/x86/include/asm/cmpxchg.h \
++  arch/x86/include/asm/cmpxchg_64.h \
++  arch/x86/include/asm/atomic64_64.h \
++  include/asm-generic/atomic-long.h \
++  include/linux/osq_lock.h \
++  include/linux/idr.h \
++  include/linux/rcupdate.h \
++    $(wildcard include/config/tiny/rcu.h) \
++    $(wildcard include/config/tree/rcu.h) \
++    $(wildcard include/config/preempt/rcu.h) \
++    $(wildcard include/config/rcu/trace.h) \
++    $(wildcard include/config/preempt/count.h) \
++    $(wildcard include/config/rcu/stall/common.h) \
++    $(wildcard include/config/no/hz/full.h) \
++    $(wildcard include/config/rcu/nocb/cpu.h) \
++    $(wildcard include/config/tasks/rcu.h) \
++    $(wildcard include/config/debug/objects/rcu/head.h) \
++    $(wildcard include/config/prove/rcu.h) \
++    $(wildcard include/config/preempt.h) \
++    $(wildcard include/config/rcu/boost.h) \
++    $(wildcard include/config/rcu/nocb/cpu/all.h) \
++    $(wildcard include/config/no/hz/full/sysidle.h) \
++  include/linux/spinlock.h \
++  include/linux/preempt.h \
++    $(wildcard include/config/preempt/notifiers.h) \
++  arch/x86/include/asm/preempt.h \
++  include/linux/thread_info.h \
++    $(wildcard include/config/compat.h) \
++    $(wildcard include/config/debug/stack/usage.h) \
++  arch/x86/include/asm/thread_info.h \
++    $(wildcard include/config/ia32/emulation.h) \
++  include/linux/bottom_half.h \
++  arch/x86/include/asm/spinlock.h \
++  include/linux/jump_label.h \
++    $(wildcard include/config/jump/label.h) \
++  arch/x86/include/asm/jump_label.h \
++  arch/x86/include/asm/qspinlock.h \
++  include/asm-generic/qspinlock.h \
++  arch/x86/include/asm/qrwlock.h \
++  include/asm-generic/qrwlock.h \
++  include/linux/rwlock.h \
++  include/linux/spinlock_api_smp.h \
++    $(wildcard include/config/inline/spin/lock.h) \
++    $(wildcard include/config/inline/spin/lock/bh.h) \
++    $(wildcard include/config/inline/spin/lock/irq.h) \
++    $(wildcard include/config/inline/spin/lock/irqsave.h) \
++    $(wildcard include/config/inline/spin/trylock.h) \
++    $(wildcard include/config/inline/spin/trylock/bh.h) \
++    $(wildcard include/config/uninline/spin/unlock.h) \
++    $(wildcard include/config/inline/spin/unlock/bh.h) \
++    $(wildcard include/config/inline/spin/unlock/irq.h) \
++    $(wildcard include/config/inline/spin/unlock/irqrestore.h) \
++  include/linux/rwlock_api_smp.h \
++    $(wildcard include/config/inline/read/lock.h) \
++    $(wildcard include/config/inline/write/lock.h) \
++    $(wildcard include/config/inline/read/lock/bh.h) \
++    $(wildcard include/config/inline/write/lock/bh.h) \
++    $(wildcard include/config/inline/read/lock/irq.h) \
++    $(wildcard include/config/inline/write/lock/irq.h) \
++    $(wildcard include/config/inline/read/lock/irqsave.h) \
++    $(wildcard include/config/inline/write/lock/irqsave.h) \
++    $(wildcard include/config/inline/read/trylock.h) \
++    $(wildcard include/config/inline/write/trylock.h) \
++    $(wildcard include/config/inline/read/unlock.h) \
++    $(wildcard include/config/inline/write/unlock.h) \
++    $(wildcard include/config/inline/read/unlock/bh.h) \
++    $(wildcard include/config/inline/write/unlock/bh.h) \
++    $(wildcard include/config/inline/read/unlock/irq.h) \
++    $(wildcard include/config/inline/write/unlock/irq.h) \
++    $(wildcard include/config/inline/read/unlock/irqrestore.h) \
++    $(wildcard include/config/inline/write/unlock/irqrestore.h) \
++  include/linux/seqlock.h \
++  include/linux/completion.h \
++  include/linux/wait.h \
++  include/uapi/linux/wait.h \
++  include/linux/debugobjects.h \
++    $(wildcard include/config/debug/objects.h) \
++    $(wildcard include/config/debug/objects/free.h) \
++  include/linux/ktime.h \
++  include/linux/time.h \
++    $(wildcard include/config/arch/uses/gettimeoffset.h) \
++  include/linux/time64.h \
++  include/uapi/linux/time.h \
++  include/linux/jiffies.h \
++  include/linux/timex.h \
++  include/uapi/linux/timex.h \
++  include/uapi/linux/param.h \
++  arch/x86/include/uapi/asm/param.h \
++  include/asm-generic/param.h \
++    $(wildcard include/config/hz.h) \
++  include/uapi/asm-generic/param.h \
++  arch/x86/include/asm/timex.h \
++  arch/x86/include/asm/tsc.h \
++    $(wildcard include/config/x86/tsc.h) \
++  include/generated/timeconst.h \
++  include/linux/timekeeping.h \
++  include/linux/rcutree.h \
++  include/linux/rbtree.h \
++  include/linux/errno.h \
++  include/uapi/linux/errno.h \
++  include/linux/kobject_ns.h \
++  include/linux/stat.h \
++  arch/x86/include/uapi/asm/stat.h \
++  include/uapi/linux/stat.h \
++  include/linux/uidgid.h \
++    $(wildcard include/config/multiuser.h) \
++    $(wildcard include/config/user/ns.h) \
++  include/linux/highuid.h \
++  include/linux/kref.h \
++  include/linux/workqueue.h \
++    $(wildcard include/config/debug/objects/work.h) \
++    $(wildcard include/config/freezer.h) \
++  include/linux/timer.h \
++    $(wildcard include/config/timer/stats.h) \
++    $(wildcard include/config/debug/objects/timers.h) \
++    $(wildcard include/config/no/hz/common.h) \
++  include/linux/sysctl.h \
++    $(wildcard include/config/sysctl.h) \
++  include/uapi/linux/sysctl.h \
++  include/linux/klist.h \
++  include/linux/pinctrl/devinfo.h \
++    $(wildcard include/config/pm.h) \
++  include/linux/pinctrl/consumer.h \
++  include/linux/seq_file.h \
++  include/linux/nodemask.h \
++    $(wildcard include/config/highmem.h) \
++    $(wildcard include/config/movable/node.h) \
++  include/linux/numa.h \
++    $(wildcard include/config/nodes/shift.h) \
++  include/linux/pinctrl/pinctrl-state.h \
++  include/linux/pm.h \
++    $(wildcard include/config/vt/console/sleep.h) \
++    $(wildcard include/config/pm/clk.h) \
++    $(wildcard include/config/pm/generic/domains.h) \
++  include/linux/ratelimit.h \
++  include/linux/gfp.h \
++    $(wildcard include/config/zone/dma.h) \
++    $(wildcard include/config/zone/dma32.h) \
++    $(wildcard include/config/deferred/struct/page/init.h) \
++    $(wildcard include/config/cma.h) \
++  include/linux/mmdebug.h \
++    $(wildcard include/config/debug/vm.h) \
++  include/linux/mmzone.h \
++    $(wildcard include/config/force/max/zoneorder.h) \
++    $(wildcard include/config/memory/isolation.h) \
++    $(wildcard include/config/memcg.h) \
++    $(wildcard include/config/zone/device.h) \
++    $(wildcard include/config/memory/hotplug.h) \
++    $(wildcard include/config/compaction.h) \
++    $(wildcard include/config/flat/node/mem/map.h) \
++    $(wildcard include/config/page/extension.h) \
++    $(wildcard include/config/no/bootmem.h) \
++    $(wildcard include/config/numa/balancing.h) \
++    $(wildcard include/config/have/memory/present.h) \
++    $(wildcard include/config/have/memoryless/nodes.h) \
++    $(wildcard include/config/need/node/memmap/size.h) \
++    $(wildcard include/config/have/memblock/node/map.h) \
++    $(wildcard include/config/need/multiple/nodes.h) \
++    $(wildcard include/config/have/arch/early/pfn/to/nid.h) \
++    $(wildcard include/config/sparsemem/extreme.h) \
++    $(wildcard include/config/have/arch/pfn/valid.h) \
++    $(wildcard include/config/holes/in/zone.h) \
++    $(wildcard include/config/arch/has/holes/memorymodel.h) \
++  include/linux/pageblock-flags.h \
++    $(wildcard include/config/hugetlb/page.h) \
++    $(wildcard include/config/hugetlb/page/size/variable.h) \
++  include/linux/page-flags-layout.h \
++  include/generated/bounds.h \
++  include/linux/memory_hotplug.h \
++    $(wildcard include/config/have/arch/nodedata/extension.h) \
++    $(wildcard include/config/have/bootmem/info/node.h) \
++  include/linux/notifier.h \
++  include/linux/rwsem.h \
++    $(wildcard include/config/rwsem/spin/on/owner.h) \
++    $(wildcard include/config/rwsem/generic/spinlock.h) \
++  arch/x86/include/asm/rwsem.h \
++  include/linux/srcu.h \
++  arch/x86/include/asm/mmzone.h \
++  arch/x86/include/asm/mmzone_64.h \
++  arch/x86/include/asm/smp.h \
++    $(wildcard include/config/x86/io/apic.h) \
++    $(wildcard include/config/x86/32/smp.h) \
++    $(wildcard include/config/debug/nmi/selftest.h) \
++  arch/x86/include/asm/mpspec.h \
++    $(wildcard include/config/eisa.h) \
++    $(wildcard include/config/x86/mpparse.h) \
++  arch/x86/include/asm/mpspec_def.h \
++  arch/x86/include/asm/x86_init.h \
++  arch/x86/include/uapi/asm/bootparam.h \
++  include/linux/screen_info.h \
++  include/uapi/linux/screen_info.h \
++  include/linux/apm_bios.h \
++  include/uapi/linux/apm_bios.h \
++  include/linux/edd.h \
++  include/uapi/linux/edd.h \
++  arch/x86/include/asm/e820.h \
++    $(wildcard include/config/efi.h) \
++    $(wildcard include/config/hibernation.h) \
++  arch/x86/include/uapi/asm/e820.h \
++    $(wildcard include/config/x86/pmem/legacy.h) \
++    $(wildcard include/config/intel/txt.h) \
++  arch/x86/include/asm/ist.h \
++  arch/x86/include/uapi/asm/ist.h \
++  include/video/edid.h \
++    $(wildcard include/config/x86.h) \
++  include/uapi/video/edid.h \
++  arch/x86/include/asm/apicdef.h \
++  arch/x86/include/asm/apic.h \
++    $(wildcard include/config/x86/x2apic.h) \
++  arch/x86/include/asm/fixmap.h \
++    $(wildcard include/config/paravirt/clock.h) \
++    $(wildcard include/config/provide/ohci1394/dma/init.h) \
++    $(wildcard include/config/pci/mmconfig.h) \
++    $(wildcard include/config/x86/intel/mid.h) \
++  arch/x86/include/asm/acpi.h \
++    $(wildcard include/config/acpi/apei.h) \
++    $(wildcard include/config/acpi.h) \
++    $(wildcard include/config/acpi/numa.h) \
++  include/acpi/pdc_intel.h \
++  arch/x86/include/asm/numa.h \
++    $(wildcard include/config/numa/emu.h) \
++  arch/x86/include/asm/topology.h \
++  include/asm-generic/topology.h \
++  arch/x86/include/asm/mmu.h \
++    $(wildcard include/config/modify/ldt/syscall.h) \
++  arch/x86/include/asm/realmode.h \
++    $(wildcard include/config/acpi/sleep.h) \
++  arch/x86/include/asm/io.h \
++    $(wildcard include/config/mtrr.h) \
++  arch/x86/include/generated/asm/early_ioremap.h \
++  include/asm-generic/early_ioremap.h \
++    $(wildcard include/config/generic/early/ioremap.h) \
++  include/asm-generic/iomap.h \
++    $(wildcard include/config/has/ioport/map.h) \
++    $(wildcard include/config/pci.h) \
++    $(wildcard include/config/generic/iomap.h) \
++  include/asm-generic/pci_iomap.h \
++    $(wildcard include/config/no/generic/pci/ioport/map.h) \
++    $(wildcard include/config/generic/pci/iomap.h) \
++  include/xen/xen.h \
++    $(wildcard include/config/xen/dom0.h) \
++    $(wildcard include/config/xen/pvh.h) \
++  include/xen/interface/xen.h \
++  arch/x86/include/asm/xen/interface.h \
++  arch/x86/include/asm/xen/interface_64.h \
++  arch/x86/include/asm/pvclock-abi.h \
++  arch/x86/include/asm/xen/hypervisor.h \
++  arch/x86/include/asm/pvclock.h \
++  include/linux/clocksource.h \
++    $(wildcard include/config/arch/clocksource/data.h) \
++    $(wildcard include/config/clocksource/watchdog.h) \
++    $(wildcard include/config/clksrc/probe.h) \
++  arch/x86/include/asm/clocksource.h \
++  arch/x86/include/uapi/asm/vsyscall.h \
++  include/asm-generic/fixmap.h \
++  arch/x86/include/asm/idle.h \
++  arch/x86/include/asm/io_apic.h \
++  arch/x86/include/asm/irq_vectors.h \
++    $(wildcard include/config/have/kvm.h) \
++    $(wildcard include/config/pci/msi.h) \
++  include/linux/topology.h \
++    $(wildcard include/config/use/percpu/numa/node/id.h) \
++    $(wildcard include/config/sched/smt.h) \
++  include/linux/smp.h \
++    $(wildcard include/config/up/late/init.h) \
++  include/linux/llist.h \
++    $(wildcard include/config/arch/have/nmi/safe/cmpxchg.h) \
++  include/linux/percpu.h \
++    $(wildcard include/config/need/per/cpu/embed/first/chunk.h) \
++    $(wildcard include/config/need/per/cpu/page/first/chunk.h) \
++  include/linux/pfn.h \
++  arch/x86/include/asm/device.h \
++    $(wildcard include/config/x86/dev/dma/ops.h) \
++    $(wildcard include/config/intel/iommu.h) \
++    $(wildcard include/config/amd/iommu.h) \
++  include/linux/pm_wakeup.h \
++  include/linux/module.h \
++    $(wildcard include/config/module/sig.h) \
++    $(wildcard include/config/modules/tree/lookup.h) \
++    $(wildcard include/config/kallsyms.h) \
++    $(wildcard include/config/tracepoints.h) \
++    $(wildcard include/config/event/tracing.h) \
++    $(wildcard include/config/livepatch.h) \
++    $(wildcard include/config/module/unload.h) \
++    $(wildcard include/config/constructors.h) \
++    $(wildcard include/config/debug/set/module/ronx.h) \
++  include/linux/kmod.h \
++  include/linux/elf.h \
++  arch/x86/include/asm/elf.h \
++    $(wildcard include/config/x86/x32/abi.h) \
++  arch/x86/include/asm/user.h \
++  arch/x86/include/asm/user_64.h \
++  arch/x86/include/uapi/asm/auxvec.h \
++  arch/x86/include/asm/vdso.h \
++    $(wildcard include/config/x86/x32.h) \
++  include/linux/mm_types.h \
++    $(wildcard include/config/split/ptlock/cpus.h) \
++    $(wildcard include/config/arch/enable/split/pmd/ptlock.h) \
++    $(wildcard include/config/have/cmpxchg/double.h) \
++    $(wildcard include/config/have/aligned/struct/page.h) \
++    $(wildcard include/config/transparent/hugepage.h) \
++    $(wildcard include/config/userfaultfd.h) \
++    $(wildcard include/config/aio.h) \
++    $(wildcard include/config/mmu/notifier.h) \
++  include/linux/auxvec.h \
++  include/uapi/linux/auxvec.h \
++  include/linux/uprobes.h \
++    $(wildcard include/config/uprobes.h) \
++  arch/x86/include/asm/uprobes.h \
++  include/uapi/linux/elf.h \
++  include/uapi/linux/elf-em.h \
++  include/linux/moduleparam.h \
++    $(wildcard include/config/alpha.h) \
++    $(wildcard include/config/ia64.h) \
++    $(wildcard include/config/ppc64.h) \
++  include/linux/rbtree_latch.h \
++  arch/x86/include/asm/module.h \
++    $(wildcard include/config/m586.h) \
++    $(wildcard include/config/m586tsc.h) \
++    $(wildcard include/config/m586mmx.h) \
++    $(wildcard include/config/mcore2.h) \
++    $(wildcard include/config/m686.h) \
++    $(wildcard include/config/mpentiumii.h) \
++    $(wildcard include/config/mpentiumiii.h) \
++    $(wildcard include/config/mpentiumm.h) \
++    $(wildcard include/config/mpentium4.h) \
++    $(wildcard include/config/mk6.h) \
++    $(wildcard include/config/mk8.h) \
++    $(wildcard include/config/melan.h) \
++    $(wildcard include/config/mcrusoe.h) \
++    $(wildcard include/config/mefficeon.h) \
++    $(wildcard include/config/mwinchipc6.h) \
++    $(wildcard include/config/mwinchip3d.h) \
++    $(wildcard include/config/mcyrixiii.h) \
++    $(wildcard include/config/mviac3/2.h) \
++    $(wildcard include/config/mviac7.h) \
++    $(wildcard include/config/mgeodegx1.h) \
++    $(wildcard include/config/mgeode/lx.h) \
++  include/asm-generic/module.h \
++    $(wildcard include/config/have/mod/arch/specific.h) \
++    $(wildcard include/config/modules/use/elf/rel.h) \
++    $(wildcard include/config/modules/use/elf/rela.h) \
++
++/home/public/workspace/github/test/170301/ycbus.o: $(deps_/home/public/workspace/github/test/170301/ycbus.o)
++
++$(deps_/home/public/workspace/github/test/170301/ycbus.o):
+diff --git a/170301/Makefile b/170301/Makefile
+new file mode 100644
+index 0000000..95baa3e
+--- /dev/null
++++ b/170301/Makefile
+@@ -0,0 +1,11 @@
++# A trivial bus driver Makefile. Saved as “Makefile” exactly  
++ifneq ($(KERNELRELEASE),)  
++	obj-m := ycbus.o  
++else  
++	KERNDIR ?= /lib/modules/$(shell uname -r)/build  
++	PWD := $(shell pwd)  
++default:  
++	$(MAKE) -C ${KERNDIR} M=${PWD} modules  
++endif  
++clean:  
++	rm -rf modules.order Module.symvers .tmp_versions ycbus.ko .ycbus.ko.cmd ycbus.mod.c ycbus.mod.o .ycbus.mod.o.cmd ycbus.o .ycbus.o.cmd  
+diff --git a/170301/Module.symvers b/170301/Module.symvers
+new file mode 100644
+index 0000000..e69de29
+diff --git a/170301/modules.order b/170301/modules.order
+new file mode 100644
+index 0000000..8ab5af3
+--- /dev/null
++++ b/170301/modules.order
+@@ -0,0 +1 @@
++kernel//home/public/workspace/github/test/170301/ycbus.ko
+diff --git a/170301/ycbus.c b/170301/ycbus.c
+new file mode 100644
+index 0000000..080ffb5
+--- /dev/null
++++ b/170301/ycbus.c
+@@ -0,0 +1,25 @@
++/* 
++ * ycbus: a software bus driver (virtual bus driver) 
++ * 
++ * a trivial ycbus driver 
++ */  
++#include <linux/device.h>  
++#include <linux/module.h>  
++struct bus_type ycbus_type = {  
++  .name      = "ycbus",  
++};  
++static int __init ycbus_driver_init(void)  
++{  
++  printk(KERN_DEBUG "ycbus_driver_init/n");  
++  return bus_register(&ycbus_type);  
++}  
++static void __exit ycbus_driver_exit(void)  
++{  
++  printk(KERN_DEBUG "ycbus_driver_exit/n");  
++  bus_unregister(&ycbus_type);  
++}  
++module_init(ycbus_driver_init);  
++module_exit(ycbus_driver_exit);  
++MODULE_AUTHOR("yc <cppgp@qq.com>");  
++MODULE_DESCRIPTION("yc pseudo-bus driver");  
++MODULE_LICENSE("GPL");  
+diff --git a/170301/ycbus.ko b/170301/ycbus.ko
+new file mode 100644
+index 0000000..f590500
+Binary files /dev/null and b/170301/ycbus.ko differ
+diff --git a/170301/ycbus.mod.c b/170301/ycbus.mod.c
+new file mode 100644
+index 0000000..2f8331d
+--- /dev/null
++++ b/170301/ycbus.mod.c
+@@ -0,0 +1,32 @@
++#include <linux/module.h>
++#include <linux/vermagic.h>
++#include <linux/compiler.h>
++
++MODULE_INFO(vermagic, VERMAGIC_STRING);
++
++__visible struct module __this_module
++__attribute__((section(".gnu.linkonce.this_module"))) = {
++	.name = KBUILD_MODNAME,
++	.init = init_module,
++#ifdef CONFIG_MODULE_UNLOAD
++	.exit = cleanup_module,
++#endif
++	.arch = MODULE_ARCH_INIT,
++};
++
++static const struct modversion_info ____versions[]
++__used
++__attribute__((section("__versions"))) = {
++	{ 0x71b9e604, __VMLINUX_SYMBOL_STR(module_layout) },
++	{ 0x59c31812, __VMLINUX_SYMBOL_STR(bus_unregister) },
++	{ 0x83c861dc, __VMLINUX_SYMBOL_STR(bus_register) },
++	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
++};
++
++static const char __module_depends[]
++__used
++__attribute__((section(".modinfo"))) =
++"depends=";
++
++
++MODULE_INFO(srcversion, "85B43BF9D25AD2F25D5122B");
+diff --git a/170301/ycbus.mod.o b/170301/ycbus.mod.o
+new file mode 100644
+index 0000000..8879eb0
+Binary files /dev/null and b/170301/ycbus.mod.o differ
+diff --git a/170301/ycbus.o b/170301/ycbus.o
+new file mode 100644
+index 0000000..5f3b4fe
+Binary files /dev/null and b/170301/ycbus.o differ
+diff --git a/170302/hello b/170302/hello
+new file mode 100755
+index 0000000..7b61384
+Binary files /dev/null and b/170302/hello differ
+diff --git a/170302/hello.c b/170302/hello.c
+new file mode 100644
+index 0000000..03daf82
+--- /dev/null
++++ b/170302/hello.c
+@@ -0,0 +1,6 @@
++#include<stdio.h>
++int main(int argc, const char *argv[])
++{
++	printf("Hello World!\n");
++	return 0;
++}
+diff --git a/170302/hello.i b/170302/hello.i
+new file mode 100644
+index 0000000..cf8f3c7
+--- /dev/null
++++ b/170302/hello.i
+@@ -0,0 +1,842 @@
++# 1 "hello.c"
++# 1 "<built-in>"
++# 1 "<command-line>"
++# 1 "/usr/include/stdc-predef.h" 1 3 4
++# 1 "<command-line>" 2
++# 1 "hello.c"
++# 1 "/usr/include/stdio.h" 1 3 4
++# 27 "/usr/include/stdio.h" 3 4
++# 1 "/usr/include/features.h" 1 3 4
++# 374 "/usr/include/features.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/sys/cdefs.h" 1 3 4
++# 385 "/usr/include/x86_64-linux-gnu/sys/cdefs.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/bits/wordsize.h" 1 3 4
++# 386 "/usr/include/x86_64-linux-gnu/sys/cdefs.h" 2 3 4
++# 375 "/usr/include/features.h" 2 3 4
++# 398 "/usr/include/features.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/gnu/stubs.h" 1 3 4
++# 10 "/usr/include/x86_64-linux-gnu/gnu/stubs.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/gnu/stubs-64.h" 1 3 4
++# 11 "/usr/include/x86_64-linux-gnu/gnu/stubs.h" 2 3 4
++# 399 "/usr/include/features.h" 2 3 4
++# 28 "/usr/include/stdio.h" 2 3 4
++
++
++
++
++
++# 1 "/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h" 1 3 4
++# 212 "/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h" 3 4
++typedef long unsigned int size_t;
++# 34 "/usr/include/stdio.h" 2 3 4
++
++# 1 "/usr/include/x86_64-linux-gnu/bits/types.h" 1 3 4
++# 27 "/usr/include/x86_64-linux-gnu/bits/types.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/bits/wordsize.h" 1 3 4
++# 28 "/usr/include/x86_64-linux-gnu/bits/types.h" 2 3 4
++
++
++typedef unsigned char __u_char;
++typedef unsigned short int __u_short;
++typedef unsigned int __u_int;
++typedef unsigned long int __u_long;
++
++
++typedef signed char __int8_t;
++typedef unsigned char __uint8_t;
++typedef signed short int __int16_t;
++typedef unsigned short int __uint16_t;
++typedef signed int __int32_t;
++typedef unsigned int __uint32_t;
++
++typedef signed long int __int64_t;
++typedef unsigned long int __uint64_t;
++
++
++
++
++
++
++
++typedef long int __quad_t;
++typedef unsigned long int __u_quad_t;
++# 121 "/usr/include/x86_64-linux-gnu/bits/types.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/bits/typesizes.h" 1 3 4
++# 122 "/usr/include/x86_64-linux-gnu/bits/types.h" 2 3 4
++
++
++typedef unsigned long int __dev_t;
++typedef unsigned int __uid_t;
++typedef unsigned int __gid_t;
++typedef unsigned long int __ino_t;
++typedef unsigned long int __ino64_t;
++typedef unsigned int __mode_t;
++typedef unsigned long int __nlink_t;
++typedef long int __off_t;
++typedef long int __off64_t;
++typedef int __pid_t;
++typedef struct { int __val[2]; } __fsid_t;
++typedef long int __clock_t;
++typedef unsigned long int __rlim_t;
++typedef unsigned long int __rlim64_t;
++typedef unsigned int __id_t;
++typedef long int __time_t;
++typedef unsigned int __useconds_t;
++typedef long int __suseconds_t;
++
++typedef int __daddr_t;
++typedef int __key_t;
++
++
++typedef int __clockid_t;
++
++
++typedef void * __timer_t;
++
++
++typedef long int __blksize_t;
++
++
++
++
++typedef long int __blkcnt_t;
++typedef long int __blkcnt64_t;
++
++
++typedef unsigned long int __fsblkcnt_t;
++typedef unsigned long int __fsblkcnt64_t;
++
++
++typedef unsigned long int __fsfilcnt_t;
++typedef unsigned long int __fsfilcnt64_t;
++
++
++typedef long int __fsword_t;
++
++typedef long int __ssize_t;
++
++
++typedef long int __syscall_slong_t;
++
++typedef unsigned long int __syscall_ulong_t;
++
++
++
++typedef __off64_t __loff_t;
++typedef __quad_t *__qaddr_t;
++typedef char *__caddr_t;
++
++
++typedef long int __intptr_t;
++
++
++typedef unsigned int __socklen_t;
++# 36 "/usr/include/stdio.h" 2 3 4
++# 44 "/usr/include/stdio.h" 3 4
++struct _IO_FILE;
++
++
++
++typedef struct _IO_FILE FILE;
++
++
++
++
++
++# 64 "/usr/include/stdio.h" 3 4
++typedef struct _IO_FILE __FILE;
++# 74 "/usr/include/stdio.h" 3 4
++# 1 "/usr/include/libio.h" 1 3 4
++# 31 "/usr/include/libio.h" 3 4
++# 1 "/usr/include/_G_config.h" 1 3 4
++# 15 "/usr/include/_G_config.h" 3 4
++# 1 "/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stddef.h" 1 3 4
++# 16 "/usr/include/_G_config.h" 2 3 4
++
++
++
++
++# 1 "/usr/include/wchar.h" 1 3 4
++# 82 "/usr/include/wchar.h" 3 4
++typedef struct
++{
++  int __count;
++  union
++  {
++
++    unsigned int __wch;
++
++
++
++    char __wchb[4];
++  } __value;
++} __mbstate_t;
++# 21 "/usr/include/_G_config.h" 2 3 4
++typedef struct
++{
++  __off_t __pos;
++  __mbstate_t __state;
++} _G_fpos_t;
++typedef struct
++{
++  __off64_t __pos;
++  __mbstate_t __state;
++} _G_fpos64_t;
++# 32 "/usr/include/libio.h" 2 3 4
++# 49 "/usr/include/libio.h" 3 4
++# 1 "/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h" 1 3 4
++# 40 "/usr/lib/gcc/x86_64-linux-gnu/4.8/include/stdarg.h" 3 4
++typedef __builtin_va_list __gnuc_va_list;
++# 50 "/usr/include/libio.h" 2 3 4
++# 144 "/usr/include/libio.h" 3 4
++struct _IO_jump_t; struct _IO_FILE;
++# 154 "/usr/include/libio.h" 3 4
++typedef void _IO_lock_t;
++
++
++
++
++
++struct _IO_marker {
++  struct _IO_marker *_next;
++  struct _IO_FILE *_sbuf;
++
++
++
++  int _pos;
++# 177 "/usr/include/libio.h" 3 4
++};
++
++
++enum __codecvt_result
++{
++  __codecvt_ok,
++  __codecvt_partial,
++  __codecvt_error,
++  __codecvt_noconv
++};
++# 245 "/usr/include/libio.h" 3 4
++struct _IO_FILE {
++  int _flags;
++
++
++
++
++  char* _IO_read_ptr;
++  char* _IO_read_end;
++  char* _IO_read_base;
++  char* _IO_write_base;
++  char* _IO_write_ptr;
++  char* _IO_write_end;
++  char* _IO_buf_base;
++  char* _IO_buf_end;
++
++  char *_IO_save_base;
++  char *_IO_backup_base;
++  char *_IO_save_end;
++
++  struct _IO_marker *_markers;
++
++  struct _IO_FILE *_chain;
++
++  int _fileno;
++
++
++
++  int _flags2;
++
++  __off_t _old_offset;
++
++
++
++  unsigned short _cur_column;
++  signed char _vtable_offset;
++  char _shortbuf[1];
++
++
++
++  _IO_lock_t *_lock;
++# 293 "/usr/include/libio.h" 3 4
++  __off64_t _offset;
++# 302 "/usr/include/libio.h" 3 4
++  void *__pad1;
++  void *__pad2;
++  void *__pad3;
++  void *__pad4;
++  size_t __pad5;
++
++  int _mode;
++
++  char _unused2[15 * sizeof (int) - 4 * sizeof (void *) - sizeof (size_t)];
++
++};
++
++
++typedef struct _IO_FILE _IO_FILE;
++
++
++struct _IO_FILE_plus;
++
++extern struct _IO_FILE_plus _IO_2_1_stdin_;
++extern struct _IO_FILE_plus _IO_2_1_stdout_;
++extern struct _IO_FILE_plus _IO_2_1_stderr_;
++# 338 "/usr/include/libio.h" 3 4
++typedef __ssize_t __io_read_fn (void *__cookie, char *__buf, size_t __nbytes);
++
++
++
++
++
++
++
++typedef __ssize_t __io_write_fn (void *__cookie, const char *__buf,
++     size_t __n);
++
++
++
++
++
++
++
++typedef int __io_seek_fn (void *__cookie, __off64_t *__pos, int __w);
++
++
++typedef int __io_close_fn (void *__cookie);
++# 390 "/usr/include/libio.h" 3 4
++extern int __underflow (_IO_FILE *);
++extern int __uflow (_IO_FILE *);
++extern int __overflow (_IO_FILE *, int);
++# 434 "/usr/include/libio.h" 3 4
++extern int _IO_getc (_IO_FILE *__fp);
++extern int _IO_putc (int __c, _IO_FILE *__fp);
++extern int _IO_feof (_IO_FILE *__fp) __attribute__ ((__nothrow__ , __leaf__));
++extern int _IO_ferror (_IO_FILE *__fp) __attribute__ ((__nothrow__ , __leaf__));
++
++extern int _IO_peekc_locked (_IO_FILE *__fp);
++
++
++
++
++
++extern void _IO_flockfile (_IO_FILE *) __attribute__ ((__nothrow__ , __leaf__));
++extern void _IO_funlockfile (_IO_FILE *) __attribute__ ((__nothrow__ , __leaf__));
++extern int _IO_ftrylockfile (_IO_FILE *) __attribute__ ((__nothrow__ , __leaf__));
++# 464 "/usr/include/libio.h" 3 4
++extern int _IO_vfscanf (_IO_FILE * __restrict, const char * __restrict,
++   __gnuc_va_list, int *__restrict);
++extern int _IO_vfprintf (_IO_FILE *__restrict, const char *__restrict,
++    __gnuc_va_list);
++extern __ssize_t _IO_padn (_IO_FILE *, int, __ssize_t);
++extern size_t _IO_sgetn (_IO_FILE *, void *, size_t);
++
++extern __off64_t _IO_seekoff (_IO_FILE *, __off64_t, int, int);
++extern __off64_t _IO_seekpos (_IO_FILE *, __off64_t, int);
++
++extern void _IO_free_backup_area (_IO_FILE *) __attribute__ ((__nothrow__ , __leaf__));
++# 75 "/usr/include/stdio.h" 2 3 4
++
++
++
++
++typedef __gnuc_va_list va_list;
++# 90 "/usr/include/stdio.h" 3 4
++typedef __off_t off_t;
++# 102 "/usr/include/stdio.h" 3 4
++typedef __ssize_t ssize_t;
++
++
++
++
++
++
++
++typedef _G_fpos_t fpos_t;
++
++
++
++
++# 164 "/usr/include/stdio.h" 3 4
++# 1 "/usr/include/x86_64-linux-gnu/bits/stdio_lim.h" 1 3 4
++# 165 "/usr/include/stdio.h" 2 3 4
++
++
++
++extern struct _IO_FILE *stdin;
++extern struct _IO_FILE *stdout;
++extern struct _IO_FILE *stderr;
++
++
++
++
++
++
++
++extern int remove (const char *__filename) __attribute__ ((__nothrow__ , __leaf__));
++
++extern int rename (const char *__old, const char *__new) __attribute__ ((__nothrow__ , __leaf__));
++
++
++
++
++extern int renameat (int __oldfd, const char *__old, int __newfd,
++       const char *__new) __attribute__ ((__nothrow__ , __leaf__));
++
++
++
++
++
++
++
++
++extern FILE *tmpfile (void) ;
++# 209 "/usr/include/stdio.h" 3 4
++extern char *tmpnam (char *__s) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++
++
++
++extern char *tmpnam_r (char *__s) __attribute__ ((__nothrow__ , __leaf__)) ;
++# 227 "/usr/include/stdio.h" 3 4
++extern char *tempnam (const char *__dir, const char *__pfx)
++     __attribute__ ((__nothrow__ , __leaf__)) __attribute__ ((__malloc__)) ;
++
++
++
++
++
++
++
++
++extern int fclose (FILE *__stream);
++
++
++
++
++extern int fflush (FILE *__stream);
++
++# 252 "/usr/include/stdio.h" 3 4
++extern int fflush_unlocked (FILE *__stream);
++# 266 "/usr/include/stdio.h" 3 4
++
++
++
++
++
++
++extern FILE *fopen (const char *__restrict __filename,
++      const char *__restrict __modes) ;
++
++
++
++
++extern FILE *freopen (const char *__restrict __filename,
++        const char *__restrict __modes,
++        FILE *__restrict __stream) ;
++# 295 "/usr/include/stdio.h" 3 4
++
++# 306 "/usr/include/stdio.h" 3 4
++extern FILE *fdopen (int __fd, const char *__modes) __attribute__ ((__nothrow__ , __leaf__)) ;
++# 319 "/usr/include/stdio.h" 3 4
++extern FILE *fmemopen (void *__s, size_t __len, const char *__modes)
++  __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++
++
++extern FILE *open_memstream (char **__bufloc, size_t *__sizeloc) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++
++
++
++
++extern void setbuf (FILE *__restrict __stream, char *__restrict __buf) __attribute__ ((__nothrow__ , __leaf__));
++
++
++
++extern int setvbuf (FILE *__restrict __stream, char *__restrict __buf,
++      int __modes, size_t __n) __attribute__ ((__nothrow__ , __leaf__));
++
++
++
++
++
++extern void setbuffer (FILE *__restrict __stream, char *__restrict __buf,
++         size_t __size) __attribute__ ((__nothrow__ , __leaf__));
++
++
++extern void setlinebuf (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__));
++
++
++
++
++
++
++
++
++extern int fprintf (FILE *__restrict __stream,
++      const char *__restrict __format, ...);
++
++
++
++
++extern int printf (const char *__restrict __format, ...);
++
++extern int sprintf (char *__restrict __s,
++      const char *__restrict __format, ...) __attribute__ ((__nothrow__));
++
++
++
++
++
++extern int vfprintf (FILE *__restrict __s, const char *__restrict __format,
++       __gnuc_va_list __arg);
++
++
++
++
++extern int vprintf (const char *__restrict __format, __gnuc_va_list __arg);
++
++extern int vsprintf (char *__restrict __s, const char *__restrict __format,
++       __gnuc_va_list __arg) __attribute__ ((__nothrow__));
++
++
++
++
++
++extern int snprintf (char *__restrict __s, size_t __maxlen,
++       const char *__restrict __format, ...)
++     __attribute__ ((__nothrow__)) __attribute__ ((__format__ (__printf__, 3, 4)));
++
++extern int vsnprintf (char *__restrict __s, size_t __maxlen,
++        const char *__restrict __format, __gnuc_va_list __arg)
++     __attribute__ ((__nothrow__)) __attribute__ ((__format__ (__printf__, 3, 0)));
++
++# 412 "/usr/include/stdio.h" 3 4
++extern int vdprintf (int __fd, const char *__restrict __fmt,
++       __gnuc_va_list __arg)
++     __attribute__ ((__format__ (__printf__, 2, 0)));
++extern int dprintf (int __fd, const char *__restrict __fmt, ...)
++     __attribute__ ((__format__ (__printf__, 2, 3)));
++
++
++
++
++
++
++
++
++extern int fscanf (FILE *__restrict __stream,
++     const char *__restrict __format, ...) ;
++
++
++
++
++extern int scanf (const char *__restrict __format, ...) ;
++
++extern int sscanf (const char *__restrict __s,
++     const char *__restrict __format, ...) __attribute__ ((__nothrow__ , __leaf__));
++# 443 "/usr/include/stdio.h" 3 4
++extern int fscanf (FILE *__restrict __stream, const char *__restrict __format, ...) __asm__ ("" "__isoc99_fscanf")
++
++                               ;
++extern int scanf (const char *__restrict __format, ...) __asm__ ("" "__isoc99_scanf")
++                              ;
++extern int sscanf (const char *__restrict __s, const char *__restrict __format, ...) __asm__ ("" "__isoc99_sscanf") __attribute__ ((__nothrow__ , __leaf__))
++
++                      ;
++# 463 "/usr/include/stdio.h" 3 4
++
++
++
++
++
++
++
++
++extern int vfscanf (FILE *__restrict __s, const char *__restrict __format,
++      __gnuc_va_list __arg)
++     __attribute__ ((__format__ (__scanf__, 2, 0))) ;
++
++
++
++
++
++extern int vscanf (const char *__restrict __format, __gnuc_va_list __arg)
++     __attribute__ ((__format__ (__scanf__, 1, 0))) ;
++
++
++extern int vsscanf (const char *__restrict __s,
++      const char *__restrict __format, __gnuc_va_list __arg)
++     __attribute__ ((__nothrow__ , __leaf__)) __attribute__ ((__format__ (__scanf__, 2, 0)));
++# 494 "/usr/include/stdio.h" 3 4
++extern int vfscanf (FILE *__restrict __s, const char *__restrict __format, __gnuc_va_list __arg) __asm__ ("" "__isoc99_vfscanf")
++
++
++
++     __attribute__ ((__format__ (__scanf__, 2, 0))) ;
++extern int vscanf (const char *__restrict __format, __gnuc_va_list __arg) __asm__ ("" "__isoc99_vscanf")
++
++     __attribute__ ((__format__ (__scanf__, 1, 0))) ;
++extern int vsscanf (const char *__restrict __s, const char *__restrict __format, __gnuc_va_list __arg) __asm__ ("" "__isoc99_vsscanf") __attribute__ ((__nothrow__ , __leaf__))
++
++
++
++     __attribute__ ((__format__ (__scanf__, 2, 0)));
++# 522 "/usr/include/stdio.h" 3 4
++
++
++
++
++
++
++
++
++
++extern int fgetc (FILE *__stream);
++extern int getc (FILE *__stream);
++
++
++
++
++
++extern int getchar (void);
++
++# 550 "/usr/include/stdio.h" 3 4
++extern int getc_unlocked (FILE *__stream);
++extern int getchar_unlocked (void);
++# 561 "/usr/include/stdio.h" 3 4
++extern int fgetc_unlocked (FILE *__stream);
++
++
++
++
++
++
++
++
++
++
++
++extern int fputc (int __c, FILE *__stream);
++extern int putc (int __c, FILE *__stream);
++
++
++
++
++
++extern int putchar (int __c);
++
++# 594 "/usr/include/stdio.h" 3 4
++extern int fputc_unlocked (int __c, FILE *__stream);
++
++
++
++
++
++
++
++extern int putc_unlocked (int __c, FILE *__stream);
++extern int putchar_unlocked (int __c);
++
++
++
++
++
++
++extern int getw (FILE *__stream);
++
++
++extern int putw (int __w, FILE *__stream);
++
++
++
++
++
++
++
++
++extern char *fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
++     ;
++# 638 "/usr/include/stdio.h" 3 4
++extern char *gets (char *__s) __attribute__ ((__deprecated__));
++
++
++# 665 "/usr/include/stdio.h" 3 4
++extern __ssize_t __getdelim (char **__restrict __lineptr,
++          size_t *__restrict __n, int __delimiter,
++          FILE *__restrict __stream) ;
++extern __ssize_t getdelim (char **__restrict __lineptr,
++        size_t *__restrict __n, int __delimiter,
++        FILE *__restrict __stream) ;
++
++
++
++
++
++
++
++extern __ssize_t getline (char **__restrict __lineptr,
++       size_t *__restrict __n,
++       FILE *__restrict __stream) ;
++
++
++
++
++
++
++
++
++extern int fputs (const char *__restrict __s, FILE *__restrict __stream);
++
++
++
++
++
++extern int puts (const char *__s);
++
++
++
++
++
++
++extern int ungetc (int __c, FILE *__stream);
++
++
++
++
++
++
++extern size_t fread (void *__restrict __ptr, size_t __size,
++       size_t __n, FILE *__restrict __stream) ;
++
++
++
++
++extern size_t fwrite (const void *__restrict __ptr, size_t __size,
++        size_t __n, FILE *__restrict __s);
++
++# 737 "/usr/include/stdio.h" 3 4
++extern size_t fread_unlocked (void *__restrict __ptr, size_t __size,
++         size_t __n, FILE *__restrict __stream) ;
++extern size_t fwrite_unlocked (const void *__restrict __ptr, size_t __size,
++          size_t __n, FILE *__restrict __stream);
++
++
++
++
++
++
++
++
++extern int fseek (FILE *__stream, long int __off, int __whence);
++
++
++
++
++extern long int ftell (FILE *__stream) ;
++
++
++
++
++extern void rewind (FILE *__stream);
++
++# 773 "/usr/include/stdio.h" 3 4
++extern int fseeko (FILE *__stream, __off_t __off, int __whence);
++
++
++
++
++extern __off_t ftello (FILE *__stream) ;
++# 792 "/usr/include/stdio.h" 3 4
++
++
++
++
++
++
++extern int fgetpos (FILE *__restrict __stream, fpos_t *__restrict __pos);
++
++
++
++
++extern int fsetpos (FILE *__stream, const fpos_t *__pos);
++# 815 "/usr/include/stdio.h" 3 4
++
++# 824 "/usr/include/stdio.h" 3 4
++
++
++extern void clearerr (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__));
++
++extern int feof (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++extern int ferror (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++
++
++extern void clearerr_unlocked (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__));
++extern int feof_unlocked (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++extern int ferror_unlocked (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++
++
++
++
++
++
++extern void perror (const char *__s);
++
++
++
++
++
++
++# 1 "/usr/include/x86_64-linux-gnu/bits/sys_errlist.h" 1 3 4
++# 26 "/usr/include/x86_64-linux-gnu/bits/sys_errlist.h" 3 4
++extern int sys_nerr;
++extern const char *const sys_errlist[];
++# 854 "/usr/include/stdio.h" 2 3 4
++
++
++
++
++extern int fileno (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++
++
++extern int fileno_unlocked (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++# 873 "/usr/include/stdio.h" 3 4
++extern FILE *popen (const char *__command, const char *__modes) ;
++
++
++
++
++
++extern int pclose (FILE *__stream);
++
++
++
++
++
++extern char *ctermid (char *__s) __attribute__ ((__nothrow__ , __leaf__));
++# 913 "/usr/include/stdio.h" 3 4
++extern void flockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__));
++
++
++
++extern int ftrylockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__)) ;
++
++
++extern void funlockfile (FILE *__stream) __attribute__ ((__nothrow__ , __leaf__));
++# 943 "/usr/include/stdio.h" 3 4
++
++# 2 "hello.c" 2
++int main(int argc, const char *argv[])
++{
++ printf("Hello World!\n");
++ return 0;
++}
+diff --git a/170302/hello.o b/170302/hello.o
+new file mode 100644
+index 0000000..331125d
+Binary files /dev/null and b/170302/hello.o differ
+diff --git a/170302/hello.s b/170302/hello.s
+new file mode 100644
+index 0000000..f3bde77
+--- /dev/null
++++ b/170302/hello.s
+@@ -0,0 +1,29 @@
++	.file	"hello.c"
++	.section	.rodata
++.LC0:
++	.string	"Hello World!"
++	.text
++	.globl	main
++	.type	main, @function
++main:
++.LFB0:
++	.cfi_startproc
++	pushq	%rbp
++	.cfi_def_cfa_offset 16
++	.cfi_offset 6, -16
++	movq	%rsp, %rbp
++	.cfi_def_cfa_register 6
++	subq	$16, %rsp
++	movl	%edi, -4(%rbp)
++	movq	%rsi, -16(%rbp)
++	movl	$.LC0, %edi
++	call	puts
++	movl	$0, %eax
++	leave
++	.cfi_def_cfa 7, 8
++	ret
++	.cfi_endproc
++.LFE0:
++	.size	main, .-main
++	.ident	"GCC: (Ubuntu 4.8.4-2ubuntu1~14.04.3) 4.8.4"
++	.section	.note.GNU-stack,"",@progbits
+diff --git a/170302/test b/170302/test
+new file mode 100755
+index 0000000..4d87772
+Binary files /dev/null and b/170302/test differ
+diff --git a/170302/test.c b/170302/test.c
+new file mode 100644
+index 0000000..eb9b049
+--- /dev/null
++++ b/170302/test.c
+@@ -0,0 +1,9 @@
++#include<stdio.h>
++#define MAX 30
++int out1,out2=0;
++int main(int argc, const char *argv[])
++{
++	int in1,in2 =0;
++	printf("to test !\n");
++	return 0;
++}
+diff --git a/170308/Makefile b/170308/Makefile
+new file mode 100644
+index 0000000..d52ecc0
+--- /dev/null
++++ b/170308/Makefile
+@@ -0,0 +1,13 @@
++DIR = (shell pwd)
++CFLAG += -g 
++CC = gcc 
++OBJS = %.o
++TARGET = $(patsubst %.c,%,$(OBJS)
++
++all:$(OBJS)
++	CC -c $(OBJS) $(TARGET)
++%.o: %.c
++	CC $@ $^
++
++clean :
++	rm bin
+diff --git a/170308/char b/170308/char
+new file mode 100755
+index 0000000..346ad62
+Binary files /dev/null and b/170308/char differ
+diff --git a/170308/char.c b/170308/char.c
+new file mode 100644
+index 0000000..9ddb48f
+--- /dev/null
++++ b/170308/char.c
+@@ -0,0 +1,10 @@
++#include<stdio.h>
++#include<string.h>
++int main(int argc, const char *argv[])
++{
++	char a;
++	char *b = &a;
++	strcpy(b,"this is to test");
++	printf("b %s",b); 
++	return 0;
++}
+diff --git a/170308/core b/170308/core
+new file mode 100644
+index 0000000..359073a
+Binary files /dev/null and b/170308/core differ
+diff --git a/170308/do_while b/170308/do_while
+new file mode 100755
+index 0000000..699140a
+Binary files /dev/null and b/170308/do_while differ
+diff --git a/170308/do_while.c b/170308/do_while.c
+new file mode 100644
+index 0000000..6e4b662
+--- /dev/null
++++ b/170308/do_while.c
+@@ -0,0 +1,12 @@
++#include<stdio.h>
++#define switch(x,y) {int tmp; tmp=x;x=y;y=tmp;}
++int main(int argc, const char *argv[])
++{
++	int a,b;
++	printf("input the number\n");
++	scanf("%d,%d",&a,&b);
++	if(a>b)
++		switch(a,b);
++	printf("the min is %d\n",a);
++	return 0;
++}
+diff --git a/170308/erorr.c b/170308/erorr.c
+new file mode 100644
+index 0000000..c7df296
+--- /dev/null
++++ b/170308/erorr.c
+@@ -0,0 +1,10 @@
++#include<stdio.h>
++//#define ANDROID 1
++#ifndef ANDROID 
++	#error "ANDROID undefined"
++#endif
++int main(int argc, const char *argv[])
++{
++	printf("to test error\n");
++	return 0;
++}
+diff --git a/170308/memcpy b/170308/memcpy
+new file mode 100755
+index 0000000..33102c5
+Binary files /dev/null and b/170308/memcpy differ
+diff --git a/170308/memcpy.c b/170308/memcpy.c
+new file mode 100644
+index 0000000..5486047
+--- /dev/null
++++ b/170308/memcpy.c
+@@ -0,0 +1,19 @@
++#include<stdio.h>
++void *mymemcpy(void *memTo, void *memFrom, size_t size)
++{
++	if((memTo == NULL) || (memFrom == NULL))
++		return NULL;
++	char *tempFrom = (char *)memFrom;
++	char *tempTo = (char *)memTo;
++	while(size -- > 0)
++		*tempFrom++ = *tempTo++;
++	return memTo;
++}
++int main(int argc, const char *argv[])
++{
++	char string1[]="how are you";
++	char des[10] = {0};
++	mymemcpy(string1, des,sizeof(string1));
++	printf("des %s\n",des);
++	return 0;
++}
+diff --git a/170308/test b/170308/test
+new file mode 100755
+index 0000000..dafc362
+Binary files /dev/null and b/170308/test differ
+diff --git a/170308/test.c b/170308/test.c
+new file mode 100644
+index 0000000..a0c7362
+--- /dev/null
++++ b/170308/test.c
+@@ -0,0 +1,10 @@
++#include<stdio.h>
++int main(int argc, const char *argv[])
++{
++	int i,j, a[3][3];
++	for(i=0;i<3;i++)
++		for(j=0;j<3;j++)
++			a[i][j] = i+j;
++	printf("a,%d,*a,%d,**a,%d\n",a,*a,**a);
++	return 0;
++}
+diff --git a/170308/volatile b/170308/volatile
+new file mode 100755
+index 0000000..3ccc16d
+Binary files /dev/null and b/170308/volatile differ
+diff --git a/170308/volatile.c b/170308/volatile.c
+new file mode 100644
+index 0000000..0898401
+--- /dev/null
++++ b/170308/volatile.c
+@@ -0,0 +1,9 @@
++#include<stdio.h>
++int main(int argc, const char *argv[])
++{
++	volatile char p;
++	p = 0x01;
++	p = 0x02;
++	printf("p %d\n",p);
++	return 0;
++}
+diff --git a/170309/core b/170309/core
+new file mode 100644
+index 0000000..904bb33
+Binary files /dev/null and b/170309/core differ
+diff --git a/170309/main b/170309/main
+new file mode 100755
+index 0000000..49ce9c6
+Binary files /dev/null and b/170309/main differ
+diff --git a/170309/main.c b/170309/main.c
+new file mode 100644
+index 0000000..09e1f6b
+--- /dev/null
++++ b/170309/main.c
+@@ -0,0 +1,5 @@
++#include<stdio.h>
++void main()
++{
++	main();
++}
+diff --git a/170309/revert b/170309/revert
+new file mode 100755
+index 0000000..10d23b9
+Binary files /dev/null and b/170309/revert differ
+diff --git a/170309/revert.c b/170309/revert.c
+new file mode 100644
+index 0000000..def1b19
+--- /dev/null
++++ b/170309/revert.c
+@@ -0,0 +1,42 @@
++#include<stdio.h>
++#include<string.h>
++#include<stdlib.h>
++char* revert(char* src,int n)
++{
++	int len,i,j;
++	len = strlen(src);
++	char p[len+1] ;
++	char* temp = (char*)(src+len-1);
++	char *ptest = (char*)p;
++	printf("src is %s len is %d\n",src,len);
++	for(j=0;j<len;j++)
++	{
++		*ptest++ = *temp--;
++		//p[j] = *ptest;
++		printf("ptest is %c ,temp is %c p is %c\n",*(ptest-1),*temp,p[j]);
++	}
++	*ptest = '\0';
++/*	for(i=0;i<n;i++)
++	{
++		for(j=0;j<len;j++)
++		{
++			*ptest++=*temp--;
++		}
++		*ptest = '\0';
++		ptest = ptest - len;
++		temp = temp +len ;
++	}*/
++//	ptest = ptest + len;
++//	printf("p is %c,%c,%s\n",*p,*(p-len),ptest);
++	for(i=0;i<5;i++)
++		printf(" p i is %c ,%d\n",p[i],i);
++	strcpy(src,p);  
++	return src;
++}
++int main(int argc, const char *argv[])
++{
++	char test[] = "howareyou";
++	revert(test,3);
++	printf("test is %s\n",test);
++	return 0;
++}
+diff --git a/170310/data.db b/170310/data.db
+new file mode 100644
+index 0000000..64b3aa0
+Binary files /dev/null and b/170310/data.db differ
+diff --git a/170310/dict.h b/170310/dict.h
+new file mode 100644
+index 0000000..eaecfdf
+--- /dev/null
++++ b/170310/dict.h
+@@ -0,0 +1,21 @@
++/*
++ *
++ *
++ *
++ *
++ *
++ *
++ *
++ *
++ */
++
++#ifndef _DICT_H_
++#define _DICT_H_
++
++#ifdef _DEBUG
++#define dprintf printf
++#else
++#define dprintf(foramt, ...) ((void)0)
++#endif 
++
++#endif  /* _DICT_H_ */
+diff --git a/170313/GetHardware.c b/170313/GetHardware.c
+new file mode 100644
+index 0000000..30e5563
+--- /dev/null
++++ b/170313/GetHardware.c
+@@ -0,0 +1,84 @@
++#include<stdio.h>
++#include<string.h>
++#include<stdlib.h>
++#include<sys/types.h>
++#include<sys/stat.h>
++#include<fcntl.h>
++void get_hardware_name(char *hardware, unsigned int *revision)
++{
++    const char *cpuinfo = "/proc/cpuinfo";
++    char *data = NULL;
++    size_t len = 0, limit = 1024;
++    int fd, n;
++    char *x, *hw, *rev;
++
++    /* Hardware string was provided on kernel command line */
++    if (hardware[0])
++        return;
++
++    fd = open(cpuinfo,O_RDONLY);
++    if (fd < 0) return;
++
++    for (;0;) {
++        //x = realloc(data, limit);
++		x = malloc(limit);
++        if (!x) {
++            printf("Failed to allocate memory to read %s\n", cpuinfo);
++            goto done;
++        }
++        data = x;
++
++        n = read(fd, data + len, limit - len);
++        if (n < 0) {
++            printf("Failed reading %s\n", cpuinfo);
++            goto done;
++        }
++        len += n;
++
++        if (len < limit)
++            break;
++
++        /* We filled the buffer, so increase size and loop to read more */
++        limit *= 2;
++    }
++	printf("data is %s\n",data);
++    data[len] = 0;
++    hw = strstr(data, "\nHardware");
++    rev = strstr(data, "\nRevision");
++
++    if (hw) {
++        x = strstr(hw, ": ");
++        if (x) {
++            x += 2;
++            n = 0;
++            while (*x && *x != '\n') {
++             //   if (!isspace(*x))
++                    //hardware[n++] = tolower(*x);
++                hardware[n++] = *x;
++                x++;
++                if (n == 31) break;
++            }
++            hardware[n] = 0;
++        }
++    }
++printf("hardware in %s, is %s\n",__func__,hardware);
++/*    if (rev) {
++        x = strstr(rev, ": ");
++        if (x) {
++            *revision = strtoul(x + 2, 0, 16);
++        }
++    }*/
++
++done:
++    close(fd);
++    free(data);
++}
++
++int main(int argc, const char *argv[])
++{
++	char h[32] ={};
++	int r[32] = {0};
++	get_hardware_name(h,r);
++	printf("hardware is %s\n",h);
++	return 0;
++}
+diff --git a/170313/GetHardware.c~ b/170313/GetHardware.c~
+new file mode 100644
+index 0000000..45a1da2
+--- /dev/null
++++ b/170313/GetHardware.c~
+@@ -0,0 +1,68 @@
++void get_hardware_name(char *hardware, unsigned int *revision)
++{
++    const char *cpuinfo = "/proc/cpuinfo";
++    char *data = NULL;
++    size_t len = 0, limit = 1024;
++    int fd, n;
++    char *x, *hw, *rev;
++
++    /* Hardware string was provided on kernel command line */
++    if (hardware[0])
++        return;
++
++    fd = open(cpuinfo, O_RDONLY);
++    if (fd < 0) return;
++
++    for (;;) {
++        x = realloc(data, limit);
++        if (!x) {
++            ERROR("Failed to allocate memory to read %s\n", cpuinfo);
++            goto done;
++        }
++        data = x;
++
++        n = read(fd, data + len, limit - len);
++        if (n < 0) {
++            ERROR("Failed reading %s: %s (%d)\n", cpuinfo, strerror(errno), errno);
++            goto done;
++        }
++        len += n;
++
++        if (len < limit)
++            break;
++
++        /* We filled the buffer, so increase size and loop to read more */
++        limit *= 2;
++    }
++
++    data[len] = 0;
++    hw = strstr(data, "\nHardware");
++    rev = strstr(data, "\nRevision");
++
++    if (hw) {
++        x = strstr(hw, ": ");
++        if (x) {
++            x += 2;
++            n = 0;
++            while (*x && *x != '\n') {
++                if (!isspace(*x))
++                    hardware[n++] = tolower(*x);
++                x++;
++                if (n == 31) break;
++            }
++            hardware[n] = 0;
++        }
++    }
++
++    if (rev) {
++        x = strstr(rev, ": ");
++        if (x) {
++            *revision = strtoul(x + 2, 0, 16);
++        }
++    }
++
++done:
++    close(fd);
++    free(data);
++}
++
+diff --git a/170313/core b/170313/core
+new file mode 100644
+index 0000000..e00e3e8
+Binary files /dev/null and b/170313/core differ
+diff --git a/170313/gethardware b/170313/gethardware
+new file mode 100755
+index 0000000..6ba14e4
+Binary files /dev/null and b/170313/gethardware differ
+diff --git a/170313/mystrstr b/170313/mystrstr
+new file mode 100755
+index 0000000..f067f3f
+Binary files /dev/null and b/170313/mystrstr differ
+diff --git a/170313/mystrstr.c b/170313/mystrstr.c
+new file mode 100644
+index 0000000..5b06c08
+--- /dev/null
++++ b/170313/mystrstr.c
+@@ -0,0 +1,43 @@
++#include<stdio.h>
++#include<string.h>
++#include<stdlib.h>
++
++char *mystrstr(char *s1, char *s2);
++
++int main(int argc, const char *argv[])
++{
++	char *s = "Golden Global View";
++	char *l = "oba";
++	char *p;
++	p = mystrstr(s,l);
++	if(p!=NULL)
++	{
++		printf("%s\n",p);
++	}
++	else
++	{
++		printf("Not Found!\n");
++	}
++	return 0;
++}
++
++char *mystrstr(char *s1, char *s2)
++{
++	int n,i=0;
++	if(*s2)
++	{
++		while(*s1)
++		{
++			for(n=0;*(s1+n)==*(s2+n);n++)
++				if(!*(s2+n+1))
++					return (char*)(s1-i);
++			i++;
++			s1++;
++		}
++		return NULL;
++	}
++	else
++	{
++		return (char*)s1;
++	}
++}
