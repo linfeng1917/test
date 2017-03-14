@@ -24,13 +24,13 @@ int main(int argc, const char *argv[])
     dog_t *dog = dog_init();
 
     /* dog 类测试 */
-/*    animal_eat(&dog->base, "bones");
-    animal_walk(&dog->base, 5);
+   animal_eat(&dog->base, "bones");
+/*    animal_walk(&dog->base, 5);
     animal_talk(&dog->base, "wuang wuang wuang..."); */
 
     /* cat 类测试 */
-    animal_eat(&cat->base, "fish");
+  //  animal_eat(&cat->base, "fish");
     animal_walk(&cat->base, 3);
-    animal_talk(&cat->base, "miao miao miao...");
+ //   animal_talk(&cat->base, "miao miao miao...");
 
 }
