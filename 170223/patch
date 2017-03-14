@@ -1,0 +1,416 @@
+diff --git a/170221/c-recipes b/170221/c-recipes
+deleted file mode 160000
+index 656b126..0000000
+--- a/170221/c-recipes
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit 656b12603e7a444cbecf2ae482662c0980204986
+diff --git a/170221/cat/Makefile b/170221/cat/Makefile
+new file mode 100644
+index 0000000..32e30f2
+--- /dev/null
++++ b/170221/cat/Makefile
+@@ -0,0 +1,21 @@
++all:main
++
++main:main.o dog.o cat.o animal-base.o
++	gcc -g -O0 -o $@ $^
++
++main.o:main.c
++	gcc -g -O0 -o $@ -c $^
++
++cat.o:cat.c
++	gcc -g -O0 -o $@ -c $^
++
++dog.o:dog.c
++	gcc -g -O0 -o $@ -c $^
++
++animal-base.o:animal-base.c
++	gcc -g -O0 -o $@ -c $^
++
++.PHONY:clean
++
++clean:
++	rm main main.o dog.o cat.o animal-base.o
+diff --git a/170221/cat/animal-base.c b/170221/cat/animal-base.c
+new file mode 100644
+index 0000000..66d02e5
+--- /dev/null
++++ b/170221/cat/animal-base.c
+@@ -0,0 +1,66 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  animal-base.c
++ *
++ *    Description:  animal base class.
++ *
++ *        Created:  12/31/2012 12:27:27 PM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#include <assert.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include "animal-base.h"
++
++/* 基类的构造函数，需要显示调用 */
++animal_t * animal_init(char *name)
++{
++    assert(name != NULL);
++    size_t name_len = strlen(name);
++
++    animal_t *animal = (animal_t *)malloc(sizeof(animal_t)
++            + sizeof(animal_ops_t) + name_len + 1);
++    memset(animal, 0, (sizeof(animal_t) + sizeof(animal_ops_t)
++                + name_len + 1));
++    animal->name = (char *)animal + sizeof(animal_t);
++    memcpy(animal->name, name, name_len);
++    animal->animal_ops = (animal_ops_t *)((char *)animal
++            + sizeof(animal_t) + name_len + 1);
++
++    return animal;
++}
++
++/* 基类的有关操作，如吃，走，说等等 */
++void animal_eat(animal_t *animal, char *food)
++{
++    animal->animal_ops->eat(food);
++    return;
++}
++
++void animal_walk(animal_t *animal, int steps)
++{
++    animal->animal_ops->walk(steps);
++    return;
++}
++
++void animal_talk(animal_t *animal, char *msg)
++{
++    animal->animal_ops->talk(msg);
++    return;
++}
++
++/* 基类的析构函数，需要显示调用 */
++void animal_die(animal_t *animal)
++{
++    assert(animal != NULL);
++
++    free(animal);
++    return;
++}
++
+diff --git a/170221/cat/animal-base.h b/170221/cat/animal-base.h
+new file mode 100644
+index 0000000..4281c46
+--- /dev/null
++++ b/170221/cat/animal-base.h
+@@ -0,0 +1,49 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  animal-base.h
++ *
++ *    Description:  animal base class.
++ *
++ *        Created:  12/31/2012 11:36:43 AM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#ifndef _ANIMAL_H_
++#define _ANIMAL_H_
++
++typedef struct animal_s_ animal_t;
++typedef struct animal_ops_s_ animal_ops_t;
++
++
++/* 动物类，是所有动物类的基类,也是抽象类 */
++struct animal_s_ {
++    char *name; /*< 动物的名称 */
++    animal_ops_t *animal_ops; /* 动物的基本行为 */
++};
++
++/* 动物的基本行为 */
++struct animal_ops_s_ {
++    /* 动物吃了什么食物 */
++    void (*eat)(char *food);
++    /* 动物走了多少步 */
++    void (*walk)(int steps);
++    /* 动物在说什么 */
++    void (*talk)(char *msg);
++};
++
++/* 基类的构造函数，需要显示调用 */
++extern animal_t * animal_init(char *name);
++
++/* 基类的有关操作，如吃，走，说等等 */
++extern void animal_eat(animal_t *animal, char *food);
++extern void animal_walk(animal_t *animal, int steps);
++extern void animal_talk(animal_t *animal, char *msg);
++
++/* 基类的析构函数，需要显示调用 */
++extern void animal_die(animal_t *animal);
++
++#endif  /* _ANIMAL_H_ */
+diff --git a/170221/cat/cat.c b/170221/cat/cat.c
+new file mode 100644
+index 0000000..258e3b9
+--- /dev/null
++++ b/170221/cat/cat.c
+@@ -0,0 +1,60 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  cat.c
++ *
++ *    Description:  cat class derived from animal base class.
++ *
++ *        Created:  12/31/2012 12:52:26 PM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#include <assert.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include "cat.h"
++
++static void eat(char *food);
++
++static void walk(int steps);
++
++static void talk(char *msg);
++
++cat_t * cat_init()
++{
++    cat_t *cat = (cat_t *)malloc(sizeof(cat_t));
++    animal_t *animal = (animal_t *)animal_init("cat");
++    memcpy(&(cat->base), animal, sizeof(animal_t));
++
++    cat->base.animal_ops->eat = eat;
++    cat->base.animal_ops->walk = walk;
++    cat->base.animal_ops->talk = talk;
++
++    animal_die(animal);
++    return cat;
++}
++
++void cat_die(cat_t *cat)
++{
++    /* nothing to do here. */
++}
++
++static void eat(char *food)
++{
++    printf("I'm a cat, I eat %s\n", food);
++}
++
++static void walk(int steps)
++{
++    printf("I'm a cat, I can jump %d steps one time\n", steps);
++}
++
++static void talk(char *msg)
++{
++    printf("I'm a cat, I talk my language %s\n", msg);
++}
+diff --git a/170221/cat/cat.h b/170221/cat/cat.h
+new file mode 100644
+index 0000000..d730b86
+--- /dev/null
++++ b/170221/cat/cat.h
+@@ -0,0 +1,29 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  cat.h
++ *
++ *    Description:  cat class derived from animal base class.
++ *
++ *        Created:  12/31/2012 12:44:05 PM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#include "animal-base.h"
++
++typedef struct cat_s_ cat_t;
++
++struct cat_s_ {
++    animal_t base; /* 继承自 animal 基类 */
++
++    /* 以下还可以添加与 cat 相关的属性和方法(函数指针), 如: */
++    /* char *owner; // cat 的主人 */
++    /* void (*hunt)(const char *mouse); // 捕老鼠 */
++};
++
++extern cat_t * cat_init();
++extern void cat_die(cat_t * cat);
++
+diff --git a/170221/cat/core b/170221/cat/core
+new file mode 100644
+index 0000000..0270bee
+Binary files /dev/null and b/170221/cat/core differ
+diff --git a/170221/cat/dog.c b/170221/cat/dog.c
+new file mode 100644
+index 0000000..6d2fe17
+--- /dev/null
++++ b/170221/cat/dog.c
+@@ -0,0 +1,60 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  dog.c
++ *
++ *    Description:  dog class derived from animal base class.
++ *
++ *        Created:  12/31/2012 12:52:26 PM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#include <assert.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++
++#include "dog.h"
++
++static void eat(char *food);
++
++static void walk(int steps);
++
++static void talk(char *msg);
++
++dog_t * dog_init()
++{
++    dog_t *dog = (dog_t *)malloc(sizeof(dog_t));
++    animal_t *animal = (animal_t *)animal_init("hello-dog");
++    memcpy(&(dog->base), animal, sizeof(animal_t));
++
++    dog->base.animal_ops->eat = eat;
++    dog->base.animal_ops->walk = walk;
++    dog->base.animal_ops->talk = talk;
++
++    animal_die(animal);
++    return dog;
++}
++
++void dog_die(dog_t *dog)
++{
++    /* nothing to do here. */
++}
++
++static void eat(char *food)
++{
++    printf("I'm a dog, I eat %s\n", food);
++}
++
++static void walk(int steps)
++{
++    printf("I'm a dog, I can jump %d steps one time\n", steps);
++}
++
++static void talk(char *msg)
++{
++    printf("I'm a dog, I talk my language %s\n", msg);
++}
+diff --git a/170221/cat/dog.h b/170221/cat/dog.h
+new file mode 100644
+index 0000000..e310b5d
+--- /dev/null
++++ b/170221/cat/dog.h
+@@ -0,0 +1,29 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  dog.h
++ *
++ *    Description:  dog class derived from animal base class.
++ *
++ *        Created:  12/31/2012 12:44:05 PM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#include "animal-base.h"
++
++typedef struct dog_s_ dog_t;
++
++struct dog_s_ {
++    animal_t base; /* 继承自 animal 基类 */
++
++    /* 以下还可以添加与 dog 相关的属性和方法(函数指针), 如: */
++    /* char *owner; // dog 的主人 */
++    /* void (*hunt)(const char *rabbit); // 猎兔犬 */
++};
++
++extern dog_t * dog_init();
++extern void dog_die(dog_t * dog);
++
+diff --git a/170221/cat/main.c b/170221/cat/main.c
+new file mode 100644
+index 0000000..4d9707b
+--- /dev/null
++++ b/170221/cat/main.c
+@@ -0,0 +1,36 @@
++/*
++ * =============================================================================
++ *
++ *       Filename:  main.c
++ *
++ *    Description:  main test.
++ *
++ *        Created:  12/31/2012 01:00:43 PM
++ *
++ *         Author:  Fu Haiping (forhappy), haipingf@gmail.com
++ *        Company:  ICT ( Institute Of Computing Technology, CAS )
++ *
++ * =============================================================================
++ */
++#include <stdio.h>
++
++#include "animal-base.h"
++#include "dog.h"
++#include "cat.h"
++
++int main(int argc, const char *argv[])
++{
++    cat_t *cat = cat_init();
++    dog_t *dog = dog_init();
++
++    /* dog 类测试 */
++   animal_eat(&dog->base, "bones");
++/*    animal_walk(&dog->base, 5);
++    animal_talk(&dog->base, "wuang wuang wuang..."); */
++
++    /* cat 类测试 */
++  //  animal_eat(&cat->base, "fish");
++    animal_walk(&cat->base, 3);
++ //   animal_talk(&cat->base, "miao miao miao...");
++
++}
+diff --git a/sensor/sensor.c b/sensor/sensor.c
+deleted file mode 100644
+index 5bbb3c4..0000000
+--- a/sensor/sensor.c
++++ /dev/null
+@@ -1 +0,0 @@
+-this is to test sensor  

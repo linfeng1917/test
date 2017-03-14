@@ -1,0 +1,1 @@
+cmd_/home/public/workspace/github/test/170301/ycbus.ko := ld -r -m elf_x86_64 -T ./scripts/module-common.lds --build-id  -o /home/public/workspace/github/test/170301/ycbus.ko /home/public/workspace/github/test/170301/ycbus.o /home/public/workspace/github/test/170301/ycbus.mod.o
