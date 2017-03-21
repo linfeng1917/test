@@ -1,12 +1,12 @@
 CC := gcc 
 CFLAG := -g -Wall 
-TARGET := log
-OBJS := log.o
+SOURCR := $(wildcard *.c)
+TARGET := $(patsubst %.c,%,$(SOURCR))
 
 all:$(TARGET)
-$(TARGET):$(OBJS)
+.c:
 	$(CC) $(CFLAG) -o $@ $^
 
 .PHONY:clean
 clean:
-	rm $(TARGET) *.o core -f
+	@rm $(TARGET)  -f
